@@ -1,0 +1,24 @@
+[Configuration]
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBordersDefault=FALSE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscMouseAutohide=FALSE
+MiscToolbarDefault=FALSE
+MiscTabCloseButtons=TRUE
+MiscHighlightUrls=TRUE
+TitleMode=TERMINAL_TITLE_REPLACE
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
+FontName=Terminus 9
+ColorCursor=#2c2c83838484
+ColorForeground=#2c2c83838484
+ColorBackground=#000010102121
+ColorPalette=#1d1d94948080;#797902022424;#44441414f3f3;#1a1a03036767;#03039090c4c4;#fbfb02020b0b;#29294646c4c4;#040424244a4a;#49491e1e7b7b;#9393595952323;#12127a7aa7a7;#3c3c11115d5d;#717108083d3d;#272784847e7e;#68682121f2f2;#393904046565
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+
