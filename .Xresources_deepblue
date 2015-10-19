@@ -1,0 +1,55 @@
+! Using XFT font notation
+URxvt*font: xft:Terminus:size=9
+URxvt.scrollBar: false
+!-*- Perl extensions -*-
+URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.underlineURLs: True
+URxvt.matcher.button: 1
+URxvt.keysym.M-Escape:perl:keyboard-select:activate
+URxvt.keysym.M-c:   perl:clipboard:copy
+URxvt.keysym.M-v:   perl:clipboard:paste
+URxvt.keysym.M-C-v: perl:clipboard:paste_escaped
+!URxvt.copyCommand: xsel -ib
+!URxvt.pasteCommand: xsel -ob
+!Comment the following line out to disable copy when text is selected
+URxvt.clipboard.autocopy: true
+
+! Special
+*.foreground:   #6708c2
+*.background:   #000021
+*.cursorColor:  #7819d3
+
+! black
+*.color0:   #037f42
+*.color8:   #a00204
+
+! red
+*.color1:   #0d7cc7
+*.color9:   #4715b9
+
+! green
+*.color2:   #6d1604
+*.color10:  #055c9f
+
+! yellow
+*.color3:   #0e6e91
+*.color11:  #5b058f
+
+! blue
+*.color4:   #5a00fb
+*.color12:  #0a1ea5
+
+! magenta
+*.color5:   #d4de25
+*.color13:  #4005ec
+
+! cyan
+*.color6:   #094c76
+*.color14:  #61098c
+
+! white
+*.color7:   #6600b2
+*.color15:  #060ef5
+
