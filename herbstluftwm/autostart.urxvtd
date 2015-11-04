@@ -132,7 +132,7 @@ hc attr theme.floating.outer_width 0
 hc attr theme.floating.outer_color black
 hc attr theme.active.inner_color '#3d04c9'
 hc attr theme.active.outer_color '#3d04c9'
-hc attr theme.background_color '#0000000'
+hc attr theme.background_color '#000000'
 
 hc set window_gap 0
 hc set frame_padding 0
