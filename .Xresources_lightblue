@@ -1,3 +1,15 @@
+!Using XFT font notation
+URxvt*font: xft:Terminus:size=9
+URxvt.scrollBar:false
+!-*- Perl extensions -*-
+URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.underlineURLs: True
+URxvt.matcher.button: 1
+!Comment the following line out to disable copying text when text is selected
+URxvt.clipboard.autocopy: true
+
 ! special
 *.foreground:   #f4a803
 *.background:   #0052a4
