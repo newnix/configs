@@ -1,0 +1,99 @@
+// PS
+Show running processes, probably going to use the BSD style flags more than any of the other flag options.
+
+# Flag options
+
+T: Shows all processes associated with this terminal
+-----------------------------------------------------------------
+a: Shows all processes accociated with any terminal
+-----------------------------------------------------------------
+g: Shows all process, including session headers
+-----------------------------------------------------------------
+r: Only show running processes
+-----------------------------------------------------------------
+x: Shows all processes, even those with no terminal assigned
+-----------------------------------------------------------------
+U: Shows processes owned by a userid listed in userlist
+-----------------------------------------------------------------
+p: Shows processes with a PID listed in pidlist
+-----------------------------------------------------------------
+t: Shows processes associated with a tty in ttylist
+-----------------------------------------------------------------
+O: Lists specific columns in a given format to display olang with the standard columns
+-----------------------------------------------------------------
+X: Display data in register format
+-----------------------------------------------------------------
+Z: Includes security information in the output
+-----------------------------------------------------------------
+j: Shows the job infromation
+-----------------------------------------------------------------
+l: Use the long format
+-----------------------------------------------------------------
+o: Displays only columns specified in a given format
+-----------------------------------------------------------------
+s: Use the signal format
+-----------------------------------------------------------------
+u: Use the user-friendly format
+-----------------------------------------------------------------
+v: Use the virtual memory format
+-----------------------------------------------------------------
+N: Defines the values to use in the WCHAN columns
+-----------------------------------------------------------------
+O: Defines the order in which to display the information columns
+-----------------------------------------------------------------
+S: Sums numerical info (CPU, Memory, etc) of the parent and child processes
+-----------------------------------------------------------------
+c: Displays the true command name (name of the program used to start the command)
+-----------------------------------------------------------------
+e: Diplays any environmental variables used by the command
+-----------------------------------------------------------------
+f: Displays processes in a hierachical format, showing which processes started which processes
+-----------------------------------------------------------------
+h: Prevent the display of header info
+-----------------------------------------------------------------
+k: Defines the columns for sorting the output
+-----------------------------------------------------------------
+n: Use numeric values for user IDs, as well as WCHAN info
+-----------------------------------------------------------------
+w: Produce wide output
+-----------------------------------------------------------------
+H: Display threads as if they were processes
+-----------------------------------------------------------------
+m: Displays threads after their processes
+-----------------------------------------------------------------
+L: List all format specifiers
+-----------------------------------------------------------------
+v: Display the version of ps
+-----------------------------------------------------------------
+
+## Column Info
+UID: User that launched the process
+PID: Process ID
+PPID: Parent process ID
+C: Processor utilization over the lifetime of the process
+STIME: System time the process started
+TTY: TTY the process was started from
+TIME: Cumulative CPU time required to run the process
+CMD: Name of the command that was started
+
+F: Filesystem Flags assigned to the process
+S: State of the process (O=running on CPU, S=sleeping, R=runnable, Z=zombie process, T=process stopped)
+PRI: Priority of the process, higher number means lower priority
+NI: Nice value, used for determining priority
+ADDR: The memory address of the process
+SZ: Approximate amount of swp space required if the process is swapped out
+WCHAN: Address of the kernel function where the process is sleeping
+
+VSZ: The size in kilobytes of the process in memory
+RSS: The physical memory that a process has used that hasn't swapped out
+STAT: Two character code representing the process state
+    
+    # First char is the same as in the UNIX S list, second char gives more detail
+        <: Process is running with high priority
+        N: Process is running with low priority
+        L: Process has pages locked in memory
+        s: Process is a session leader
+        l: Process is multi-threaded
+        +: Process is running in the foreground
+
+
