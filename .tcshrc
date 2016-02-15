@@ -1,0 +1,5 @@
+alias ls 'ls-F';
+set autolist;
+set correct = cmd;
+set color;
+set colorcat;
