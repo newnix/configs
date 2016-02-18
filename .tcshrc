@@ -3,3 +3,4 @@ set autolist;
 set correct = cmd;
 set color;
 set colorcat;
+alias grep='grep -nH --color=always';
