@@ -1,3 +1,10 @@
+! Use XFT fonts
+URxvt*font: xft:Terminus:size=9
+URxvt.scrollBar: false
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.underlineURLs: True
+URxvt.matcher.button: 1
+
 ! special
 *.foreground:   #a80c01
 *.background:   #000408
