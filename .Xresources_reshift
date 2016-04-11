@@ -1,6 +1,8 @@
 ! Use XFT fonts
 URxvt*font: xft:Terminus:size=9
 URxvt.scrollBar: false
+!-*- Perl Extensions -*-
+URxvt.perl-ext-common:default,matcher,keyboard-select
 URxvt.url-launcher: /usr/bin/firefox
 URxvt.underlineURLs: True
 URxvt.matcher.button: 1

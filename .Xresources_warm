@@ -1,0 +1,45 @@
+! Use XFT fonts
+URxvt*font: xft:Terminus:size=9
+URxvt.scrollBar: false
+!-*- Perl Extensions -*-
+URxvt.perl-ext-common:default,matcher,keyboard-select
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.underlineURLs: True
+URxvt.matcher.button: 1
+
+! special
+*.foreground:   #9b1804
+*.background:   #000101
+*.cursorColor:  #9b1804
+
+! black
+*.color0:       #6210ca
+*.color8:       #a7032f
+
+! red
+*.color1:       #5a2020
+*.color9:       #14cc4b
+
+! green
+*.color2:       #4b0f93
+*.color10:      #e51f23
+
+! yellow
+*.color3:       #488d8a
+*.color11:      #841a23
+
+! blue
+*.color4:       #033965
+*.color12:      #ea9c13
+
+! magenta
+*.color5:       #15021c
+*.color13:      #fb1c03
+
+! cyan
+*.color6:       #1c0117
+*.color14:      #af0a1d
+
+! white
+*.color7:       #0f243a
+*.color15:      #fda9a1
