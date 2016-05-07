@@ -1,0 +1,49 @@
+!Using XFT font notation
+URxvt*font: xft:Terminus:size=9
+URxvt.scrollBar:false
+!-*- Perl extensions -*-
+URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
+URxvt.keysym.M-u: perl:url-select:select_next
+!URxvt.url-launcher: /usr/bin/firefox
+URxvt.url-launcher: /usr/bin/chromium
+URxvt.underlineURLs: True
+URxvt.matcher.button: 1
+!Comment the following line out to disable copying text when text is selected
+URxvt.clipboard.autocopy: true
+
+! special
+*.foreground:   #0068a3
+*.background:   #000000
+*.cursorColor:  #0068a3
+
+! black
+*.color0:       #1e5cd3
+*.color8:       #1f0f3f
+
+! red
+*.color1:       #f90101
+*.color9:       #c22a2a
+
+! green
+*.color2:       #a403bb
+*.color10:      #15987e
+
+! yellow
+*.color3:       #1d979f
+*.color11:      #0f9741
+
+! blue
+*.color4:       #4f00ff
+*.color12:      #970b63
+
+! magenta
+*.color5:       #7d27e9
+*.color13:      #012c59
+
+! cyan
+*.color6:       #3655d9
+*.color14:      #0cacd0
+
+! white
+*.color7:       #d62331
+*.color15:      #ef0d97
