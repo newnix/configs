@@ -1,5 +1,5 @@
 !Using XFT font notation
-URxvt*font: xft:Terminus:size=9
+*font: xft:Terminus:size=9
 URxvt.scrollBar:false
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
