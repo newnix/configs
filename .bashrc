@@ -52,6 +52,22 @@ alias ping='sudo ping'
 ## shell options
 BASH_OPTS="autocd, cdspell, checkhash, checkjobs, checkwinsize, globstar, histappend, histverify, dirspell, progcomp"
 
+## Set up a few nice functions depending on the distro/os
+#system()
+#{
+#	if [[ $(uname -a | awk '{print $2}') == "Sabayon" ]]
+#		then 
+#			install_cmds=sabayon
+#		elif [[ $(uname -a | awk '{print $2}') == "Gentoo" ]]
+#			install_cmds=gentoo
+#		elif [[ $(uname -a | awk '{print $2}') == "Arch" ]]
+#			install_cmds=arch
+#		else
+#			echo "There's no current command grouping for this OS or Distro."
+#	fi
+#}
+
+
 ## Pacman Stuff
 ####alias install='sudo pacman --color=always -Syy --noconfirm'
 ####alias upgrade='sudo pacman --color=always -Syyu --noconfirm'
@@ -62,13 +78,30 @@ alias install='sudo equo i'
 alias upgrade='sudo equo up && sudo equo u'
 alias systest='sudo equo lt && sudo equo dt'
 
-#PROMPT_COMMAND="echo -n [$(date +'%Y.%m.%d %T')] "
-##set the prompt
-PS1='\[\033]0; \u@\h:\w\007\]\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!%\[\033[00m\]${NO_COLOUR} '
+
+## Allow me to exit by hitting 'q', getting very used to vim
+q()
+{
+	exit
+}
+
+## Change the prompt slightly if root, otherwise, use the same prompt. 
+## Plan for color change later on, when colors are better understood in prompting.
+
+if [ $UID -ne 0 ]
+	then
+
+		##set the prompt
+		PS1='\[\033]0; \u@\h:\w\007\]\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!%\[\033[00m\]${NO_COLOUR} '
+	else
+		##set the prompt (root)
+		PS1='\[\033]0; \u@\h:\w\007\]\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!#\[\033[00m\]${NO_COLOUR} '
+
+fi 
 
 ## Function to reload the shell, since the whole alias thing doesn't seem to work properly
 
-load(){
+reload(){
 	. $HOME/.bashrc
 }
 
@@ -84,3 +117,6 @@ lock()
 {
 	xtrlock -b
 }
+
+## Allow me to easily talk to herbstclient like in /etc/xdg/herbstluftwm/autostart
+alias hc='herbstclient'
