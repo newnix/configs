@@ -25,7 +25,7 @@ current_date()
 	echo -n '['$(date +%Y.%m.%d" "%R)'] '
 	
 }
-PROMPT_COMMAND=current_date
+#PROMPT_COMMAND=current_date
 
 ## set some aliases
 alias ggrep='grep -niH --color=always'
@@ -92,10 +92,10 @@ if [ $UID -ne 0 ]
 	then
 
 		##set the prompt
-		PS1='\[\033]0; \u@\h:\w\007\]\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!%\[\033[00m\]${NO_COLOUR} '
+		PS1='\D{%Y.%m.%d} \A \[\e[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!%\[\033[00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1='\[\033]0; \u@\h:\w\007\]\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!#\[\033[00m\]${NO_COLOUR} '
+		PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!#\[\033[00m\]${NO_COLOUR} '
 
 fi 
 
@@ -120,3 +120,34 @@ lock()
 
 ## Allow me to easily talk to herbstclient like in /etc/xdg/herbstluftwm/autostart
 alias hc='herbstclient'
+
+## Sprunger
+## Make things easier to upload to sprunge.us
+sprunge()
+{
+    $("$1") | curl -F 'sprunge=<-' http://sprunge.us
+}
+
+## Test the term colors
+## using a script stolen from tldp.org
+if [ -f $HOME/bin/color_test.bash ]
+then
+	function colors()
+	{
+		$HOME/bin/color_test.bash
+	}
+fi
+
+
+
+## Prompting colors
+## These colors are meant as a quick reference and shorthand for creating colored output
+## The color next to them are not necessarily what xresources are translated to, but what the terminal will attempt to display
+BLACK='\[\e[0;30]\]'
+BLUE='\[\e[0;34]\]'
+GREEN='\[\e[0;32]\]'
+CYAN='\[\e[0;36]\]'
+RED='\[\e[0;31]\]'
+
+
+

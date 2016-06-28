@@ -1,5 +1,6 @@
 !Using XFT font notation
-*font: xft:Terminus:size=9
+!URxvt*font: xft:Terminus:size=9
+*font: xft: Terminus:size=9
 URxvt.scrollBar:false
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
@@ -18,7 +19,7 @@ URxvt.clipboard.autocopy: true
 
 ! black
 *.color0:       #1e5cd3
-*.color8:       #1f0f3f
+*.color8:       #5401fb
 
 ! red
 *.color1:       #f90101
@@ -38,7 +39,7 @@ URxvt.clipboard.autocopy: true
 
 ! magenta
 *.color5:       #7d27e9
-*.color13:      #012c59
+*.color13:      #17ea28
 
 ! cyan
 *.color6:       #3655d9
