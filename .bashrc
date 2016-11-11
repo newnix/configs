@@ -8,13 +8,34 @@
 ## If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-## Tell me which shell I'm working in
+## Let your histfile grow, man
+unset HISTFILESIZE
+export HISTSIZE=9999 ## Because if I have a single session running that long, I should probaly rotate the file1. Or stop with the frivolous commands.
+export HISTTIMEFORMAT='%Y%m%d %R '
+# Tell me which shell I'm working in
 # echo "Working with $SHELL"
 # This broke scp, find another way to announce the shell.
 
+## Set a pty/tty specific histfile
+TTY=$(tty)
+HISTTTY=$(echo $(tty) | cut -d / -f3,4 | tr '/' '.')
+HISTFILE="$HOME/.bash_history.$HISTTTY"
+
 ## Set the variables I like/need
-export TERM=rxvt-256color
+
+# Is this a tty? Is it a pty?
+ISTTY=$(echo $(tty) | egrep -c '(tty)[0-9]+')
+
+if [ $ISTTY == 0 ] 
+then 
+	export TERM=rxvt-256color
+else
+	export TERM=linux
+fi
+
 export PATH=$PATH:$HOME/bin:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
+export VISUAL=vim
+export EDITOR=vim
 
 ## Set the time format
 export TIMEFORMAT=%P
@@ -28,59 +49,21 @@ current_date()
 #PROMPT_COMMAND=current_date
 
 ## set some aliases
-alias ggrep='grep -niH --color=always'
-alias vgrep='grep -niHv --color=always'
+alias ggrep='grep -niH --color=auto'
+alias vgrep='grep -niHv --color=auto'
 alias tv='tail -v'
-alias pftp='/enf/bin/pftptools.sh'
-alias ls='ls -F --color=always'
+alias ls='ls -F --color=auto'
 alias ssh='ssh -o ServerAliveInterval=30'
-alias zggrep='zgrep -niH --color=always'
+alias zggrep='zgrep -niH --color=auto'
 alias zless='zless -NJ'
-
-## Use the ipmi view tool
-alias ipmi='~/ipmi/IPMIView_V2.11.0_bundleJRE_Linux_x64_20151223/IMPIView20'
-
-## Get the weather!
-#TBD
-
-## Launch pidgin and cleanly remove the terminal window.
-alias pidgin='pidgin &2>/dev/null & exit'
-
-## stupid ping rules.
-alias ping='sudo ping'
+alias watch='watch -d'
 
 ## shell options
 BASH_OPTS="autocd, cdspell, checkhash, checkjobs, checkwinsize, globstar, histappend, histverify, dirspell, progcomp"
 
-## Set up a few nice functions depending on the distro/os
-#system()
-#{
-#	if [[ $(uname -a | awk '{print $2}') == "Sabayon" ]]
-#		then 
-#			install_cmds=sabayon
-#		elif [[ $(uname -a | awk '{print $2}') == "Gentoo" ]]
-#			install_cmds=gentoo
-#		elif [[ $(uname -a | awk '{print $2}') == "Arch" ]]
-#			install_cmds=arch
-#		else
-#			echo "There's no current command grouping for this OS or Distro."
-#	fi
-#}
-
-
-## Pacman Stuff
-####alias install='sudo pacman --color=always -Syy --noconfirm'
-####alias upgrade='sudo pacman --color=always -Syyu --noconfirm'
-####alias pupgrade='sudo pacman --color=always -Syyup'
-
-## Entropy
-alias install='sudo equo i'
-alias upgrade='sudo equo up && sudo equo u'
-alias systest='sudo equo lt && sudo equo dt'
-
-
 ## Allow me to exit by hitting 'q', getting very used to vim
-q()
+## Changed to 'x' because Gentoo and such
+x()
 {
 	exit
 }
@@ -88,14 +71,16 @@ q()
 ## Change the prompt slightly if root, otherwise, use the same prompt. 
 ## Plan for color change later on, when colors are better understood in prompting.
 
+prompt_tty=$(echo $TTY | cut -d/ -f3,4)
+
 if [ $UID -ne 0 ]
 	then
 
 		##set the prompt
-		PS1='\D{%Y.%m.%d} \A \[\e[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!%\[\033[00m\]${NO_COLOUR} '
+		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] | \w  | Jobs: \j | \# \n\!#\[\033[00m\]${NO_COLOUR} '
+		PS1='\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \# \nHist: \! #\[\e[00m\]${NO_COLOUR} '
 
 fi 
 
@@ -143,11 +128,138 @@ fi
 ## Prompting colors
 ## These colors are meant as a quick reference and shorthand for creating colored output
 ## The color next to them are not necessarily what xresources are translated to, but what the terminal will attempt to display
-BLACK='\[\e[0;30]\]'
-BLUE='\[\e[0;34]\]'
-GREEN='\[\e[0;32]\]'
-CYAN='\[\e[0;36]\]'
-RED='\[\e[0;31]\]'
+BLACK='\[\e[0;30\]'
+BLUE='\[\e[0;34\]'
+GREEN='\[\e[0;32\]'
+CYAN='\[\e[0;36\]'
+RED='\[\e[0;31\]'
+
+## Updates the $HOME/.dbinfo file used for the db() function
+if [ -f $HOME/bin/fetch_dbinfo.bash ]
+then
+	function dbupdate()
+	{
+		$HOME/bin/fetch_dbinfo.bash
+	}
+fi
+
+## This function uses the information in $HOME/.dbinfo to discover
+## which host/database name is used for a specific site,
+## works via project_id, agency_id, or even agency name
+## some of the intended built-in checks don't work as intended yet,
+## but this should be moved to a separate script anyway, to allow greater flexibility.
+if [ -f $HOME/.dbinfo ]
+then
+	function db()
+	{
+		local db_site="$@" ## This should allow for adding the -c flag to execute commands on the databases as well
+#		local db_user="readonly" ## making sure this doesn't get interpreted as something other than a string ## no longer needed, have db account
+		local db_host
+		local db_name
+		local db_search_cmd="grep $db_site $HOME/.dbinfo"
+		local connect ## variable determining how to proceed based of the grep conditional statements
+
+		## Get the database info from the site name
+		## asking for clarification with ambiguous results will come later. Maybe.
+
+		if [ $($db_search_cmd | wc -l) -gt 1 ]
+		then
+			echo "That request was too vague, try again."
+			connect=2 ## This status should be able to trigger an interactive menu for the user to select their target
+			#echo -e -n $'\cc' > $TTY
+		elif [ $($db_search_cmd | wc -l) -eq 0 ]
+		then
+			echo "That site returned no matches."
+			connect=1 ## This will cause the function to just exit with an echo message
+		else
+			db_host=$($db_search_cmd | awk -F ' : ' '{print $6}' | cut --delimiter=' ' -f1)
+			db_name=$($db_search_cmd | awk -F ' : ' '{print $7}')
+			connect=0 ## We have good data, exactly one match, move on to the next conditional
+		fi
+		## Removed from the if statement to try fixing this function. 
+
+		## Now we connect!
+		## Temp modification to issue an echo statement
+		echo "Sanity check time, does this command look correct?"
+		echo "psql -h $db_host $db_name"
+		echo -e "If this is wrong, hit ^C now\n"
+		sleep 2
+		psql -h $db_host $db_name
+		
+	}
+fi
 
 
+## remove multimedia files
+## The way this function was written actually allows it to 
+## remove all files with a matching extension, not just audio.
+function rmext()
+{
+	local format=${1}
+	
+	case $format in
+	# set up a couple of flags
+	# three help options to match multiple conventions
+	-?		) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
+	-h		) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
+	--help	) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
+	wav		) rm *.wav;;
+	mp3		) rm *.mp3;;
+	flac	) rm *.flac;;
+	spx		) rm *.spx;;
+	ogg		) rm *.ogg;;
+	aac		) rm *.aac;;
+	# something not listed
+	*		) rm *.$1;;
+	esac
+}
 
+## Show me the sites managed
+function sites()
+{
+	## This only works on othosts, but will be nice to have available with the new history format being used.
+	enfver | grep otser | cut -d_ -f2 | awk '{print $1}' | sort -d
+}
+
+## Show me all files matching an extension
+function lsext()
+{
+	local ext=${1}
+
+	case $extension in
+	## some boilerplate options
+	## three common help invocations to explain what's happening.
+	-?		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
+	-h		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
+	--help	) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
+	txt		) ls -halt *.txt;;
+	csv		) ls -halt *.csv;;
+	bash	) ls -halt *.bash;;
+	mp3		) ls -halt *.mp3;;
+	## I'm not your mother. 
+	## I'm not planning out everything.
+	*		) ls -halt *.$1;;
+	esac
+}
+
+## Global grep
+## should be a smart grep wrapper, kinda like zgrep
+## if done correctly, will pass the same args to all possible forms of grep
+## (zgrep,egrep,xzgrep,etc.)
+## should source a script into the .bashrc, so the script is run when the command is entered,
+## rather than having a single, large function run when using this command
+
+## easy access to the documentation databases created on localhost
+function doc()
+{
+	psql docdb
+}
+
+## if fortune's installed, print a fortune.
+if [ -f /usr/bin/fortune ]
+then
+	fortune
+elif [ -f /usr/local/bin/fortune ]
+then 
+	fortune
+fi
