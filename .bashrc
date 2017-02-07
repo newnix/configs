@@ -22,18 +22,8 @@ HISTTTY=$(echo $(tty) | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
 
 ## Set the variables I like/need
-
-# Is this a tty? Is it a pty?
-ISTTY=$(echo $(tty) | egrep -c '(tty)[0-9]+')
-
-if [ $ISTTY == 0 ] 
-then 
-	export TERM=rxvt-256color
-else
-	export TERM=linux
-fi
-
-export PATH=$PATH:$HOME/bin:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
+export TERM=rxvt-256color
+export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
 export VISUAL=vim
 export EDITOR=vim
 
@@ -49,17 +39,42 @@ current_date()
 #PROMPT_COMMAND=current_date
 
 ## set some aliases
-alias ggrep='grep -niH --color=auto'
-alias vgrep='grep -niHv --color=auto'
+alias ggrep='grep -niH --color=always'
+alias vgrep='grep -niHv --color=always'
 alias tv='tail -v'
-alias ls='ls -F --color=auto'
+alias pftp='/enf/bin/pftptools.sh'
+alias ls='ls -FG'
 alias ssh='ssh -o ServerAliveInterval=30'
-alias zggrep='zgrep -niH --color=auto'
+alias zggrep='zgrep -niH --color=always'
 alias zless='zless -NJ'
-alias watch='watch -d'
+
+## Use the ipmi view tool
+alias ipmi='~/ipmi/IPMIView_V2.11.0_bundleJRE_Linux_x64_20151223/IMPIView20'
+
+## Get the weather!
+#TBD
+
+## Launch pidgin and cleanly remove the terminal window.
+alias pidgin='pidgin &2>/dev/null & exit'
 
 ## shell options
 BASH_OPTS="autocd, cdspell, checkhash, checkjobs, checkwinsize, globstar, histappend, histverify, dirspell, progcomp"
+
+## Set up a few nice functions depending on the distro/os
+#system()
+#{
+#	if [[ $(uname -a | awk '{print $2}') == "Sabayon" ]]
+#		then 
+#			install_cmds=sabayon
+#		elif [[ $(uname -a | awk '{print $2}') == "Gentoo" ]]
+#			install_cmds=gentoo
+#		elif [[ $(uname -a | awk '{print $2}') == "Arch" ]]
+#			install_cmds=arch
+#		else
+#			echo "There's no current command grouping for this OS or Distro."
+#	fi
+#}
+
 
 ## Allow me to exit by hitting 'q', getting very used to vim
 ## Changed to 'x' because Gentoo and such
@@ -77,10 +92,10 @@ if [ $UID -ne 0 ]
 	then
 
 		##set the prompt
-		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1='\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \# \nHist: \! #\[\e[00m\]${NO_COLOUR} '
+		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 
 fi 
 
@@ -93,8 +108,13 @@ reload(){
 ## Get the weather/moon forcast
 ## Will need some refinement to add in more options, but this should get the basic functionality down
 weather(){
-	local city=$1
-	curl wttr.in/$1
+	local city="$@"
+	if [ z$city == "z" ]
+	then 
+		city="78217"
+	fi
+
+	curl "wttr.in/$city"
 }
 
 ## Lock the screen. Should also try to set a hotkey binding at some point
@@ -134,7 +154,7 @@ GREEN='\[\e[0;32\]'
 CYAN='\[\e[0;36\]'
 RED='\[\e[0;31\]'
 
-## Updates the $HOME/.dbinfo file used for the db() function
+
 if [ -f $HOME/bin/fetch_dbinfo.bash ]
 then
 	function dbupdate()
@@ -143,20 +163,15 @@ then
 	}
 fi
 
-## This function uses the information in $HOME/.dbinfo to discover
-## which host/database name is used for a specific site,
-## works via project_id, agency_id, or even agency name
-## some of the intended built-in checks don't work as intended yet,
-## but this should be moved to a separate script anyway, to allow greater flexibility.
+## This function doesn't seem to work properly for some reason. 
 if [ -f $HOME/.dbinfo ]
 then
 	function db()
 	{
-		local db_site="$@" ## This should allow for adding the -c flag to execute commands on the databases as well
-#		local db_user="readonly" ## making sure this doesn't get interpreted as something other than a string ## no longer needed, have db account
+		local db_site="$@"
 		local db_host
 		local db_name
-		local db_search_cmd="grep $db_site $HOME/.dbinfo"
+		local db_search_cmd="grep -i $db_site $HOME/.dbinfo"
 		local connect ## variable determining how to proceed based of the grep conditional statements
 
 		## Get the database info from the site name
@@ -166,13 +181,13 @@ then
 		then
 			echo "That request was too vague, try again."
 			connect=2 ## This status should be able to trigger an interactive menu for the user to select their target
-			#echo -e -n $'\cc' > $TTY
+			echo -e -n $'\cc' > $TTY
 		elif [ $($db_search_cmd | wc -l) -eq 0 ]
 		then
 			echo "That site returned no matches."
 			connect=1 ## This will cause the function to just exit with an echo message
 		else
-			db_host=$($db_search_cmd | awk -F ' : ' '{print $6}' | cut --delimiter=' ' -f1)
+			db_host=$($db_search_cmd | awk -F ' : ' '{print $6}' | cut -d' ' -f1)
 			db_name=$($db_search_cmd | awk -F ' : ' '{print $7}')
 			connect=0 ## We have good data, exactly one match, move on to the next conditional
 		fi
@@ -189,6 +204,45 @@ then
 	}
 fi
 
+## Automatically insert my samba authentication file
+## Assuming it exists, else informs you to make one to allow for faster access.
+
+## More work is needed to get this corrected, currently hanging on execution. 
+#if [ -z $UID ]
+#then
+#	if [ -f $HOME/.smbauth ]
+#	then
+#		echo "Using root's samba credentials.."
+#	else
+#		echo "Root doesn't have any saved samba credentials."
+#		echo "Either link them from your home directory or create a new file for root to use."
+#	fi
+#else
+#	if [ -f $HOME/.smbauth ]
+#		 then
+#			function smbtree()
+#			{
+#				smbtree -A $HOME/.smbauth "$@"
+#			}
+#			function smbclient()
+#			{
+#				smbclient -A $HOME/.smbauth "$@"
+#			}
+#		 else
+#			function smbtree()
+#			{
+#				echo "You don't have a $HOME/.smbauth file, you'll have to authenticate manually."
+#				echo "create a $HOME/.smbauth file with your username and password in it to allow faster access to smb shares."
+#				smbtree "$@"
+#			}
+#			function smbclient()
+#			{
+#				echo "You don't have a $HOME/.smbauth file, you'll have to authenticate manually."
+#				echo "create a $HOME/.smbauth file with your username and password in it to allow faster access to smb shares."
+#				smbclient "$@"
+#			}
+#	fi			
+#fi
 
 ## remove multimedia files
 ## The way this function was written actually allows it to 
@@ -242,24 +296,10 @@ function lsext()
 	esac
 }
 
-## Global grep
-## should be a smart grep wrapper, kinda like zgrep
-## if done correctly, will pass the same args to all possible forms of grep
-## (zgrep,egrep,xzgrep,etc.)
-## should source a script into the .bashrc, so the script is run when the command is entered,
-## rather than having a single, large function run when using this command
-
-## easy access to the documentation databases created on localhost
-function doc()
-{
-	psql docdb
-}
-
-## if fortune's installed, print a fortune.
-if [ -f /usr/bin/fortune ]
+if [ -x /usr/bin/fortune ]
 then
-	fortune
-elif [ -f /usr/local/bin/fortune ]
-then 
-	fortune
+	fortune -a
+elif [ -x /usr/games/fortune ]
+then
+	fortune -a 
 fi

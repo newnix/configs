@@ -1,10 +1,8 @@
 :set number
 :set relativenumber
-:filetype plugin on
 :syntax on
-:set autoindent
 :set tabstop=2
-:set softtabstop=2
+:set autoindent
+:set clipboard=unnamed
 :set shiftwidth=2
-:set expandtab
-
+:filetype plugin on
