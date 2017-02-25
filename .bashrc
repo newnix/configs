@@ -54,27 +54,19 @@ alias ipmi='~/ipmi/IPMIView_V2.11.0_bundleJRE_Linux_x64_20151223/IMPIView20'
 ## Get the weather!
 #TBD
 
-## Launch pidgin and cleanly remove the terminal window.
-alias pidgin='pidgin &2>/dev/null & exit'
-
 ## shell options
-BASH_OPTS="autocd, cdspell, checkhash, checkjobs, checkwinsize, globstar, histappend, histverify, dirspell, progcomp"
+BASH_OPTS="autocd cdspell checkhash checkjobs checkwinsize globstar histappend histverify dirspell progcomp cmdhist dotglob nullglob xpg_echo"
 
-## Set up a few nice functions depending on the distro/os
-#system()
-#{
-#	if [[ $(uname -a | awk '{print $2}') == "Sabayon" ]]
-#		then 
-#			install_cmds=sabayon
-#		elif [[ $(uname -a | awk '{print $2}') == "Gentoo" ]]
-#			install_cmds=gentoo
-#		elif [[ $(uname -a | awk '{print $2}') == "Arch" ]]
-#			install_cmds=arch
-#		else
-#			echo "There's no current command grouping for this OS or Distro."
-#	fi
-#}
+for x in ${BASH_OPTS}
+do
+	shopt -s $x
+done
 
+## Push dotfiles to remote host
+if [ -x $HOME/bin/pushconfigs.bash ]
+then
+	alias pushc=$HOME/bin/pushconfigs.bash
+fi
 
 ## Allow me to exit by hitting 'q', getting very used to vim
 ## Changed to 'x' because Gentoo and such
@@ -95,7 +87,7 @@ if [ $UID -ne 0 ]
 		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u@\h\[\e[01;34m\] | \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 
 fi 
 
@@ -130,7 +122,7 @@ alias hc='herbstclient'
 ## Make things easier to upload to sprunge.us
 sprunge()
 {
-    $("$1") | curl -F 'sprunge=<-' http://sprunge.us
+    $("$@") | curl -F 'sprunge=<-' http://sprunge.us
 }
 
 ## Test the term colors
@@ -166,6 +158,8 @@ fi
 ## This function doesn't seem to work properly for some reason. 
 if [ -f $HOME/.dbinfo ]
 then
+	if [ -x $(which psql) ]
+	then
 	function db()
 	{
 		local db_site="$@"
@@ -202,6 +196,9 @@ then
 		psql -h $db_host $db_name
 		
 	}
+	else
+		echo "You must have the Postgresql client installed to use this utility."
+	fi
 fi
 
 ## Automatically insert my samba authentication file
@@ -278,9 +275,9 @@ function sites()
 ## Show me all files matching an extension
 function lsext()
 {
-	local ext=${1}
+	local ext=$"@"
 
-	case $extension in
+	case $ext in
 	## some boilerplate options
 	## three common help invocations to explain what's happening.
 	-?		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
@@ -292,7 +289,7 @@ function lsext()
 	mp3		) ls -halt *.mp3;;
 	## I'm not your mother. 
 	## I'm not planning out everything.
-	*		) ls -halt *.$1;;
+	*		) ls -halt *.${ext};
 	esac
 }
 
