@@ -1,11 +1,11 @@
-/* See LICENSE file for copyright and license details. */
+/* See LICENSE file for copyright and license details. *
 
 /*
  * appearance
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "Terminus:size=9:autohint=true";
+static char font[] = "Terminess Powerline:size=9:autohint=true";
 static int borderpx = 2;
 
 /*
@@ -18,7 +18,7 @@ static int borderpx = 2;
  */
 static char shell[] = "/usr/local/bin/bash";
 static char *utmp = NULL;
-static char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -cstopb 38400";
+static char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -istrip altwerase -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
 static char vtiden[] = "\033[?6c";
@@ -32,7 +32,7 @@ static float chscale = 1.0;
  *
  * More advanced example: " `'\"()[]{}"
  */
-static char worddelimiters[] = " ''\"()[]{}\\/";
+static char worddelimiters[] = " ''\"()[]{}\\/-+_.,&*^#@!$%=;:<>";
 
 /* selection timeouts (in milliseconds) */
 static unsigned int doubleclicktimeout = 300;

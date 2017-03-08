@@ -5,3 +5,6 @@
 :set autoindent
 :filetype plugin on
 :set clipboard=unnamed
+:set laststatus=2
+:set title
+:set ruler
