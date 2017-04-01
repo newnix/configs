@@ -1,4 +1,4 @@
-/* See LICENSE file for copyright and license details. *
+/* See LICENSE file for copyright and license details. */
 
 /*
  * appearance
@@ -85,7 +85,7 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#000000",
+	"#000000", /* [0] Background color (black) */
 	"#1e5cd3",
 	"#f90101",
 	"#a403bb",
@@ -107,8 +107,8 @@ static const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#d62331",
-	"#ef0d97",
+	"#d62331", /* [256] default cursor */
+	"#ef0d97", /* [257] reverse cursor */
 };
 
 

@@ -22,7 +22,7 @@ HISTTTY=$(echo $(tty) | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
 
 ## Set the variables I like/need
-export TERM=rxvt-256color
+#export TERM=rxvt-256color
 export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
 export VISUAL=vim
 export EDITOR=vim
@@ -186,14 +186,18 @@ then
 			connect=0 ## We have good data, exactly one match, move on to the next conditional
 		fi
 		## Removed from the if statement to try fixing this function. 
-
-		## Now we connect!
-		## Temp modification to issue an echo statement
-		echo "Sanity check time, does this command look correct?"
-		echo "psql -h $db_host $db_name"
-		echo -e "If this is wrong, hit ^C now\n"
-		sleep 2
-		psql -h $db_host $db_name
+		
+		## finally added this condition to prevent trying to connect without a match
+		if [ $connect -eq 0 ]
+		then
+			## Now we connect!
+			## Temp modification to issue an echo statement
+			echo "Sanity check time, does this command look correct?"
+			echo "psql -h $db_host $db_name"
+			echo -e "If this is wrong, hit ^C now\n"
+			sleep 2
+			psql -h $db_host $db_name
+		fi
 		
 	}
 	else
@@ -283,13 +287,13 @@ function lsext()
 	-?		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
 	-h		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
 	--help	) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
-	txt		) ls -halt *.txt;;
-	csv		) ls -halt *.csv;;
-	bash	) ls -halt *.bash;;
-	mp3		) ls -halt *.mp3;;
+	txt		) ls -halt ./*.txt;;
+	csv		) ls -halt ./*.csv;;
+	bash	) ls -halt ./*.bash;;
+	mp3		) ls -halt ./*.mp3;;
 	## I'm not your mother. 
 	## I'm not planning out everything.
-	*		) ls -halt *.${ext};
+	*		) ls -halt ./*.${ext};
 	esac
 }
 
@@ -300,3 +304,29 @@ elif [ -x /usr/games/fortune ]
 then
 	fortune -a 
 fi
+
+if [[ $HOSTNAME == "FreeDaemon" ]]
+then
+	## Simple method of sandboxing browser instances
+	## See https://www.dragonflybsd.org/docs/docs/handbook/RunSecureBrowser for more information.
+	alias chromebox='ssh box1 -n "DISPLAY=:0.0 chrome" & exit'
+fi
+
+function 24bit() {
+	# simple test to check for 24 bit color support
+	# if the gradient is smooth, the true color support is working
+	awk 'BEGIN{
+    s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+    for (colnum = 0; colnum<77; colnum++) {
+        r = 255-(colnum*255/76);
+        g = (colnum*510/76);
+        b = (colnum*255/76);
+        if (g>255) g = 510-g;
+        printf "\033[48;2;%d;%d;%dm", r,g,b;
+        printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+        printf "%s\033[0m", substr(s,colnum+1,1);
+    }
+    printf "\n";
+	}'
+}
+

@@ -8,3 +8,7 @@
 :set laststatus=2
 :set title
 :set ruler
+:set shiftwidth=2
+:set sb
+:set ttyfast
+":set termguicolors
