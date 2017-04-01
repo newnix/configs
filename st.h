@@ -63,7 +63,7 @@ static unsigned int cursorthickness = 2;
 static int bellvolume = 0;
 
 /* default TERM value */
-static char termname[] = "st-256color";
+static char termname[] = "xterm-256color";
 
 /*
  * spaces per tab
@@ -85,30 +85,32 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#000000", /* [0] Background color (black) */
-	"#1e5cd3",
-	"#f90101",
-	"#a403bb",
-	"#1d979f",
-	"#4f00ff",
-	"#7d27e9",
-	"#0068a3",
+	"#C87416", /* [0]  */
+	"#FF0000", /* [1]  */
+	"#A700D3", /* [2]  */
+	"#1D7C9F", /* [3]  */
+	"#2871A2", /* [4]  */
+	"#2222D2", /* [5]  */
+	"#1840EB", /* [6]  */
+	"#E2460E", /* [7]  */
 
 	/* 8 bright colors */
-	"#5401fb",
-	"#c22a2a",
-	"#15987e",
-	"#0f9741",
-	"#5c5cff",
-	"#970b63",
-	"#17ea28",
-	"#0cacd0",
+	"#5101F2", /* [8]  */
+	"#7DC22A", /* [9]  */
+	"#12816B", /* [10] */
+	"#09901B", /* [11] */
+	"#60083F", /* [12] */
+	"#06640E", /* [13] */
+	"#04386D", /* [14] */
+	"#039A30", /* [15] */
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#d62331", /* [256] default cursor */
-	"#ef0d97", /* [257] reverse cursor */
+	"#F0F0F0", /* [256] default cursor */
+	"#0F0F0F", /* [257] reverse cursor */
+	"#000000", /* [258] background color */
+	"#6A82FF", /* [259] forground color */
 };
 
 
@@ -116,8 +118,8 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-static unsigned int defaultfg = 7;
-static unsigned int defaultbg = 0;
+static unsigned int defaultfg = 259;
+static unsigned int defaultbg = 258;
 static unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
 
