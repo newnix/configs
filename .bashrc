@@ -20,9 +20,13 @@ export HISTTIMEFORMAT='%Y%m%d %R '
 TTY=$(tty)
 HISTTTY=$(echo $(tty) | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
-
+ISX=$(echo $TTY | grep -ci pts)
 ## Set the variables I like/need
 #export TERM=rxvt-256color
+if [ -z $ISX ] 
+then 
+	export TERM=xterm
+fi
 export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
 export VISUAL=vim
 export EDITOR=vim
@@ -84,10 +88,10 @@ if [ $UID -ne 0 ]
 	then
 
 		##set the prompt
-		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1="(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 
 fi 
 
