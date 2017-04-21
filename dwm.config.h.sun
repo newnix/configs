@@ -2,9 +2,9 @@
 
 /* appearance */
 static const char *fonts[] = {
-	"Terminess Powerline:size=9"
-};
-static const char dmenufont[]       = "Terminess Powerline:size=9";
+	"xos4 Terminess Powerline:size=9"
+}; /* the name of the font will sometimes have "xos4" prepended to it for some unknown reason" */
+static const char dmenufont[]       = "xos4 Terminess Powerline:size=9";
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";

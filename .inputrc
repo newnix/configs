@@ -8,13 +8,14 @@ set show-mode-in-prompt on
 
 ## This should allow for tab-completion more like in tcsh
 set show-all-if-ambiguous on
+set show-all-if-unmodified on
 set mark-directories on
 set mark-symlinked-directories on
 set visible-stats on
 ## and maybe even some things that are more like zsh
 set menu-complete-display-prefix on
 set skip-completed-text on
-
+set page-completions on
 ## Ensure matching parens are signaled
 set blink-matching-paren on
 
@@ -25,8 +26,23 @@ set colored-stats on
 ## visual bells are great
 set bell-style visible
 
+## Match hidden files in tab-complete
+set match-hidden-files on
+
+## Enable 8bit input without stripping the 8th bit
+set meta-flag on 
+set input-meta on
+set convert-meta off
+set output-meta on
+
+## This may be useful, no idea what the hell a magic space is though
+#Space: magic-space
+
+# maybe fix end/home
+"\e[1~": vi-insert-beg
+"\e[4~": vi-append-eol
 ## Enable the keypad
-set enable-keypad on
+#set enable-keypad on
 
 ## mark modified history lines
 # set mark-modified-lines on 

@@ -12,9 +12,6 @@
 unset HISTFILESIZE
 export HISTSIZE=9999 ## Because if I have a single session running that long, I should probaly rotate the file1. Or stop with the frivolous commands.
 export HISTTIMEFORMAT='%Y%m%d %R '
-# Tell me which shell I'm working in
-# echo "Working with $SHELL"
-# This broke scp, find another way to announce the shell.
 
 ## Set a pty/tty specific histfile
 TTY=$(tty)
@@ -25,7 +22,9 @@ ISX=$(echo $TTY | grep -ci pts)
 #export TERM=rxvt-256color
 if [ -z $ISX ] 
 then 
-	export TERM=xterm
+	NOTX=1
+else
+	export TERM=xterm-256color
 fi
 export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
 export VISUAL=vim
@@ -51,6 +50,13 @@ alias ls='ls -FG'
 alias ssh='ssh -o ServerAliveInterval=30'
 alias zggrep='zgrep -niH --color=always'
 alias zless='zless -NJ'
+if [ -x /usr/local/bin/lolcat ]
+then
+	alias cat='lolcat'
+elif [ -x /usr/bin/lolcat ]
+then
+	alias cat='lolcat'
+fi
 
 ## Use the ipmi view tool
 alias ipmi='~/ipmi/IPMIView_V2.11.0_bundleJRE_Linux_x64_20151223/IMPIView20'
@@ -303,10 +309,30 @@ function lsext()
 
 if [ -x /usr/bin/fortune ]
 then
-	fortune -a
+	if [ -x /usr/local/bin/lolcat ]
+	then
+		if [ -x /usr/local/bin/cowsay ]
+		then
+			fortune -a | cowsay -f tux-stab | lolcat -F 1
+		else
+			fortune -a | lolcat -F 1
+		fi
+	else
+		fortune -a
+	fi
 elif [ -x /usr/games/fortune ]
 then
-	fortune -a 
+	if [ -x /usr/local/bin/lolcat ]
+	then
+		if [ -x /usr/local/bin/cowsay ] 
+		then 
+			fortune -a | cowsay -f tux-stab | lolcat -F 1
+		else 
+			fortune -a | lolcat -F 1
+		fi
+	else
+		fortune -a 
+	fi
 fi
 
 if [[ $HOSTNAME == "FreeDaemon" ]]
@@ -333,4 +359,3 @@ function 24bit() {
     printf "\n";
 	}'
 }
-

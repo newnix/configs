@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "Terminess Powerline:size=9:autohint=true";
+static char font[] = "xos4 Terminess Powerline:size=9:autohint=true";
 static int borderpx = 2;
 
 /*
@@ -18,7 +18,7 @@ static int borderpx = 2;
  */
 static char shell[] = "/usr/local/bin/bash";
 static char *utmp = NULL;
-static char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -istrip altwerase -cstopb 38400";
+static char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -istrip -altwerase -cstopb 38400 -echoprt";
 
 /* identification sequence returned in DA and DECID */
 static char vtiden[] = "\033[?6c";
