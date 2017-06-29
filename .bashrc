@@ -8,6 +8,14 @@
 ## If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+## shell options
+BASH_OPTS="nullglob autocd cdspell checkhash checkjobs checkwinsize globstar histappend histverify dirspell progcomp cmdhist dotglob nullglob xpg_echo"
+
+for x in ${BASH_OPTS}
+do
+	shopt -s $x
+done
+
 ## Let your histfile grow, man
 unset HISTFILESIZE
 export HISTSIZE=9999 ## Because if I have a single session running that long, I should probaly rotate the file1. Or stop with the frivolous commands.
@@ -15,14 +23,13 @@ export HISTTIMEFORMAT='%Y%m%d %R '
 
 ## Set a pty/tty specific histfile
 TTY=$(tty)
-HISTTTY=$(echo $(tty) | cut -d / -f3,4 | tr '/' '.')
+HISTTTY=$(echo $TTY | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
-ISX=$(echo $TTY | grep -ci pts)
 ## Set the variables I like/need
 #export TERM=rxvt-256color
 if [ -z $ISX ] 
 then 
-	NOTX=1
+	export TERM=cons25
 else
 	export TERM=xterm-256color
 fi
@@ -33,23 +40,6 @@ export EDITOR=vim
 ## Set the time format
 export TIMEFORMAT=%P
 
-## Setting the prompt_command
-current_date()
-{
-	echo -n '['$(date +%Y.%m.%d" "%R)'] '
-	
-}
-#PROMPT_COMMAND=current_date
-
-## set some aliases
-alias ggrep='grep -niH --color=always'
-alias vgrep='grep -niHv --color=always'
-alias tv='tail -v'
-alias pftp='/enf/bin/pftptools.sh'
-alias ls='ls -FG'
-alias ssh='ssh -o ServerAliveInterval=30'
-alias zggrep='zgrep -niH --color=always'
-alias zless='zless -NJ'
 if [ -x /usr/local/bin/lolcat ]
 then
 	alias cat='lolcat'
@@ -58,51 +48,25 @@ then
 	alias cat='lolcat'
 fi
 
-## Use the ipmi view tool
-alias ipmi='~/ipmi/IPMIView_V2.11.0_bundleJRE_Linux_x64_20151223/IMPIView20'
-
-## Get the weather!
-#TBD
-
-## shell options
-BASH_OPTS="autocd cdspell checkhash checkjobs checkwinsize globstar histappend histverify dirspell progcomp cmdhist dotglob nullglob xpg_echo"
-
-for x in ${BASH_OPTS}
-do
-	shopt -s $x
-done
-
 ## Push dotfiles to remote host
 if [ -x $HOME/bin/pushconfigs.bash ]
 then
 	alias pushc=$HOME/bin/pushconfigs.bash
 fi
 
-## Allow me to exit by hitting 'q', getting very used to vim
-## Changed to 'x' because Gentoo and such
-x()
-{
-	exit
-}
-
 ## Change the prompt slightly if root, otherwise, use the same prompt. 
 ## Plan for color change later on, when colors are better understood in prompting.
-
 prompt_tty=$(echo $TTY | cut -d/ -f3,4)
-
 if [ $UID -ne 0 ]
 	then
-
 		##set the prompt
 		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
 		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
-
 fi 
 
 ## Function to reload the shell, since the whole alias thing doesn't seem to work properly
-
 reload(){
 	. $HOME/.bashrc
 }
@@ -113,20 +77,10 @@ weather(){
 	local city="$@"
 	if [ z$city == "z" ]
 	then 
-		city="78217"
+		city="78154"
 	fi
-
 	curl "wttr.in/$city"
 }
-
-## Lock the screen. Should also try to set a hotkey binding at some point
-lock()
-{
-	xtrlock -b
-}
-
-## Allow me to easily talk to herbstclient like in /etc/xdg/herbstluftwm/autostart
-alias hc='herbstclient'
 
 ## Sprunger
 ## Make things easier to upload to sprunge.us
@@ -144,18 +98,6 @@ then
 		$HOME/bin/color_test.bash
 	}
 fi
-
-
-
-## Prompting colors
-## These colors are meant as a quick reference and shorthand for creating colored output
-## The color next to them are not necessarily what xresources are translated to, but what the terminal will attempt to display
-BLACK='\[\e[0;30\]'
-BLUE='\[\e[0;34\]'
-GREEN='\[\e[0;32\]'
-CYAN='\[\e[0;36\]'
-RED='\[\e[0;31\]'
-
 
 if [ -f $HOME/bin/fetch_dbinfo.bash ]
 then
@@ -215,77 +157,6 @@ then
 	fi
 fi
 
-## Automatically insert my samba authentication file
-## Assuming it exists, else informs you to make one to allow for faster access.
-
-## More work is needed to get this corrected, currently hanging on execution. 
-#if [ -z $UID ]
-#then
-#	if [ -f $HOME/.smbauth ]
-#	then
-#		echo "Using root's samba credentials.."
-#	else
-#		echo "Root doesn't have any saved samba credentials."
-#		echo "Either link them from your home directory or create a new file for root to use."
-#	fi
-#else
-#	if [ -f $HOME/.smbauth ]
-#		 then
-#			function smbtree()
-#			{
-#				smbtree -A $HOME/.smbauth "$@"
-#			}
-#			function smbclient()
-#			{
-#				smbclient -A $HOME/.smbauth "$@"
-#			}
-#		 else
-#			function smbtree()
-#			{
-#				echo "You don't have a $HOME/.smbauth file, you'll have to authenticate manually."
-#				echo "create a $HOME/.smbauth file with your username and password in it to allow faster access to smb shares."
-#				smbtree "$@"
-#			}
-#			function smbclient()
-#			{
-#				echo "You don't have a $HOME/.smbauth file, you'll have to authenticate manually."
-#				echo "create a $HOME/.smbauth file with your username and password in it to allow faster access to smb shares."
-#				smbclient "$@"
-#			}
-#	fi			
-#fi
-
-## remove multimedia files
-## The way this function was written actually allows it to 
-## remove all files with a matching extension, not just audio.
-function rmext()
-{
-	local format=${1}
-	
-	case $format in
-	# set up a couple of flags
-	# three help options to match multiple conventions
-	-?		) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
-	-h		) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
-	--help	) echo -e "Usage rmext \$MEDIA_FORMAT (eg. mp3)\nSee Also: man rm";;
-	wav		) rm *.wav;;
-	mp3		) rm *.mp3;;
-	flac	) rm *.flac;;
-	spx		) rm *.spx;;
-	ogg		) rm *.ogg;;
-	aac		) rm *.aac;;
-	# something not listed
-	*		) rm *.$1;;
-	esac
-}
-
-## Show me the sites managed
-function sites()
-{
-	## This only works on othosts, but will be nice to have available with the new history format being used.
-	enfver | grep otser | cut -d_ -f2 | awk '{print $1}' | sort -d
-}
-
 ## Show me all files matching an extension
 function lsext()
 {
@@ -333,13 +204,6 @@ then
 	else
 		fortune -a 
 	fi
-fi
-
-if [[ $HOSTNAME == "FreeDaemon" ]]
-then
-	## Simple method of sandboxing browser instances
-	## See https://www.dragonflybsd.org/docs/docs/handbook/RunSecureBrowser for more information.
-	alias chromebox='ssh box1 -n "DISPLAY=:0.0 chrome" & exit'
 fi
 
 function 24bit() {

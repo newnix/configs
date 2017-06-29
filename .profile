@@ -17,16 +17,23 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin:/us
 BLOCKSIZE=K;	export BLOCKSIZE
 EDITOR=vim;   	export EDITOR
 PAGER=less;  	export PAGER
-LANG=en_US.UTF-8;	export LANG
 
-# set ENV to a file invoked each time sh is started for interactive use.
-ENV=$HOME/.shrc; export ENV
-if [ -f $HOME/.bashrc ]
+if [[ "$SHELL" == "/usr/local/bin/bash" ]]
 then
-	. $HOME/.bashrc
+	if [ -f $HOME/.bashrc ] 
+	then
+		. $HOME/.bashrc
+	fi
+else
+	# set ENV to a file invoked each time sh is started for interactive use.
+	ENV=$HOME/.shrc; export ENV
 fi
-
-#if [ -f $HOME/.inputrc ] 
-#then 
-#	. $HOME/.inputrc
-#fi
+	
+if [ -z $DISPLAY ]
+then
+	ISX=0
+	LANG=C; export LANG
+else
+	ISX=1
+	LANG=en_US.UTF-8;	export LANG
+fi
