@@ -33,11 +33,11 @@ fi
 # to use the proper set of environmental variables
 if [ -z $DISPLAY ]
 then
-	ISX=0; export ISX
+	ISX=false; export ISX
 	LANG=C; export LANG
 	TERM=cons25; export TERM
 else
-	ISX=1; export ISX
+	ISX=true; export ISX
 	LANG=en_US.UTF-8;	export LANG
 	TERM=xterm-256color; export TERM
 fi
