@@ -29,11 +29,15 @@ else
 	ENV=$HOME/.shrc; export ENV
 fi
 	
+# keeping this in .profile for login shells other than bash
+# to use the proper set of environmental variables
 if [ -z $DISPLAY ]
 then
-	ISX=0
+	ISX=0; export ISX
 	LANG=C; export LANG
+	TERM=cons25; export TERM
 else
-	ISX=1
+	ISX=1; export ISX
 	LANG=en_US.UTF-8;	export LANG
+	TERM=xterm-256color; export TERM
 fi

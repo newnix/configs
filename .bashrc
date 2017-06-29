@@ -25,13 +25,22 @@ export HISTTIMEFORMAT='%Y%m%d %R '
 TTY=$(tty)
 HISTTTY=$(echo $TTY | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
-## Set the variables I like/need
-#export TERM=rxvt-256color
-if [ -z $ISX ] 
+# make sure that we're using the right environment
+# depending on whether we're running X or not
+# moved to .bashrc from .profile to ensure it's run for each interactive shell
+if [ -z $DISPLAY ] # since this should be set every time X starts
+then
+	ISX=false
+else 
+	ISX=true
+fi
+if [ $ISX ] 
 then 
 	export TERM=cons25
+	export LANG=C
 else
 	export TERM=xterm-256color
+	export LANG=en_US.UTF-8
 fi
 export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
 export VISUAL=vim
