@@ -1,0 +1,8 @@
+// This document is meant to record what steps were taken to get Zabbix 3.0 running with a mysql backend 
+// on Debian 8... I think
+
+- Firstly, update everything, add the testing repos, update again
+- The packages appear to have mostly taken care of themselves
+- Find the index.html file and create a /zabbix in that directory, dump the frontend stuff there
+- open a browser and go to <host>/zabbix
+- should now be able to continue with using zabbix

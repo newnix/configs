@@ -1,0 +1,87 @@
+Illumos tends to use RBAC, or Role Based Access Control, which is more or less creating ACLs for what users can do
+these roles can be checked with the `roles(1)` command, and under `/etc/usr_attr(4)`, or indirectly through `/etc/prof_attr(4)`
+these authorizations, are unfortunately using Java conventions, but are listed as fully-qualified names. These names
+identify the organization and the functionality that it controls. Starting with the the domain of the creating organization,
+ending with the specific functions it controls.
+
+An example of these auths would look like this:
+
+	$ auths tester01 tester02
+	tester01 : solaris.system.date,solaris.jobs.admin
+	tester02 : solaris.system.*
+
+Notice that there's no comma separating the different auths, be careful when adding new auths to the system.
+
+The file `/etc/security/policy.conf(4)` is used to provide security policy configuration for user-level attributes,
+each entry consists of a key/value pair in the form:
+
+	key = value
+
+The following keys are defined:
+
+	AUTHS_GRANTED
+		Specify the default set of authorizations granted to all users.
+		The value is zero or more comma-separated authorizations defined in `/etc/auth_attr(4)`
+	
+	PROFS_GRANTED
+		Specify the default set of profiles granted to all users. 
+		The value is zero or more comma-separated profiles defined in `/etc/prof_attr(4)`
+	
+	CONSOLE_USER
+		Specify an additional set of profiles granted to the _console user_ user.
+		The value is zero or more comma-separated profiles in `/etc/prof_attr(4)`
+	
+	PRIV_DEFAULT / PRIV_LIMIT
+		Setting for these keys determine the default privileges that users have (privileges(5)).
+		If these keys aren't set, the default privileges are taken from the inhereted set.
+		PRIV_DEFAULT determines the default set on login. PRIV_LIMIT defines the limit set on login.
+		Users can have privileges assigned or taken away through use of user_attr(4). Privileges
+		can also be assigned to profiles, in which case users who have those profiles can 
+		exercise the assinged privileges through pfexec(1).
+
+		For maximum future compatibility, it's highly recommended that the privilege specifications always
+		include "basic" or "all". Privileges should then be removed using negation (plocy.conf(4) EXAMPLES). 
+		The idea behind this practice is to prevent newly created users from unexpectedly not having permission
+		to do the tasks that are necessary for their role.
+
+		Note: removing privileges from the limit set requires extreme care, as any suid root program
+		might suddenly fail because it lacks the proper privilege(s). Likewise, removing basic privileges
+		from the default privilege set can cause unexpected failure modes in applications.
+
+	LOCK_AFTER_RETRIES=YES|NO
+		Specifies whether a local account is locked after the count of failed logins for a user equals or 
+		exceeds the allowed number of retries as defined by RETRIES in /etc/default/login. The default value 
+		for users is NO. Individual account overrides are provided by user_attr(4).
+
+	CRYPT_ALGORITHMS_ALLOW
+		Specify the algorithms that are allowed for new passwords and is enforced only in crypt_gensalt(3C)
+	
+	CRYPT_ALGORITHMS_DEPRECATE
+		Specify the algorithm for new passwords that is to be deprecated. For example, to deprecate the 
+		traditional UNIX algorithm, specify CRYPT_ALGORITHMS_DEPRECATE=__unix__ and change CRYPT_DEFAULT=
+		to another algorithm for BSD and Linux MD5.
+
+	CRYPT_DEFAULT
+		Specify the default algorithm for new passwords. The default is the traditional UNIX algorithm.
+		This is not listed in crypt.conf(4), since it's internal to libc. It's refered to as the 
+		reserved name __unix__.
+
+EXAMPLES
+	Define a key/value pair:
+
+		AUTHS_GRANTED=solaris.date
+	
+	Specifying Privileges:
+		
+		As noted above, you should specify privileges through negation, specifying all for 
+		PRIV_LIMIT, and basic for PRIV_DEFAULT, then subtracting privileges, as shown below.
+
+			PRIV_LIMIT=all,!sys_linkdir
+			PRIV_DEFAULT=basic,!file_link_any
+
+		The first line, above, takes away only the sys_linkdir privilege. The second line
+		takes away only the file_link privilege. These privilege specifications are unaffected by any 
+		future addition of privileges that might occur.
+
+NOTE
+	_console user_ is defined as the owner of /dev/console

@@ -18,7 +18,7 @@ BLOCKSIZE=K;	export BLOCKSIZE
 EDITOR=vim;   	export EDITOR
 PAGER=less;  	export PAGER
 
-if [[ "$SHELL" == "/usr/local/bin/bash" ]]
+if [[ $(basename "$SHELL") == "bash" ]]
 then
 	if [ -f $HOME/.bashrc ] 
 	then
@@ -31,13 +31,38 @@ fi
 	
 # keeping this in .profile for login shells other than bash
 # to use the proper set of environmental variables
-if [ -z $DISPLAY ]
+
+## Add a check to verify that this is even relevant
+if [ `uname -s` = "DragonFly" ]
 then
-	ISX=false; export ISX
-	LANG=C; export LANG
-	TERM=cons25; export TERM
+	if [ -z $DISPLAY ]
+	then
+		ISX=false; export ISX
+		LANG=C; export LANG
+		#TERM=cons25; export TERM
+	else
+		ISX=true; export ISX
+		LANG=en_US.UTF-8;	export LANG
+		TERM=xterm-256color; export TERM
+	fi
 else
-	ISX=true; export ISX
-	LANG=en_US.UTF-8;	export LANG
-	TERM=xterm-256color; export TERM
+	if [ `uname -s` = "Linux" ]
+	then
+		LANG=en_US.UTF-8; export LANG
+		TERM=xterm-256color; export TERM
+	else
+		if [ `uname -s` = "FreeBSD" ]
+		then
+			if [ -z $DISPLAY ]
+			then
+				ISX=false; export ISX
+				LANG=C; export LANG
+				#TERM=cons25; export TERM
+			else
+				ISX=true; export ISX
+				LANG=en_US.UTF-8;	export LANG
+				TERM=xterm-256color; export TERM
+			fi
+		fi
+	fi
 fi

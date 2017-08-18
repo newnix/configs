@@ -24,7 +24,7 @@ set colored-completion-prefix on
 set colored-stats on
 
 ## visual bells are great
-set bell-style visible
+set bell-style none
 
 ## Match hidden files in tab-complete
 set match-hidden-files on

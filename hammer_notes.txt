@@ -1,0 +1,86 @@
+-- Create a PFS/Subvolume/Dataset
+	- `hammer pfs-master $DIRECTORY [$OPTIONS]` will create a HAMMER PFS at $DIRECTORY with $OPTIONS
+	- `hammer pfs-slave` works in the same way, but a slave is always read-only unless accessed through the hammer(8) utility
+	- slave pfs' can be upgraded to a master for write access when necessary, and masters can be downgraded to slaves when desired
+	- It's recommended to create a pfs as <fs>/pfs/<name>, then mount it using `mount_null <fs>/pfs/<name> /mountpoint`
+	- The mountpoint will need to be created for you to null mount the pfs there
+
+-- Destroy a PFS
+	- `hammer pfs-destroy $DIRECTORY` will prompt you to confirm that you want to destroy a pfs 
+	- if the pfs is a master, it will prompt you twice to do so
+
+-- Null mount it!
+	- You can null mount the pfs with some really fun options, similar to zfs
+	- for things like mail directories, `mount_null -o noexec,nosuid,noatime <pfs> <mountpoint>` should prevent malicious things from doing anything useful
+	- To make this permanent, you need to add the following line to your /etc/fstab
+		* <fs>/pfs/<name>	/<mountpoint>	null	rw${OPTIONS}	0	0
+
+-- Jail creation
+	- Ideally the jail should be on a PFS, just for additional segregation from the host system
+	- After the PFS is null mounted to the host system, we need to actually create the environment
+		* cd /usr/src
+		* git pull
+		* make <opts> buildworld
+		* make <opts> installworld DESTDIR=/path/to/jail/dir
+		* cd etc
+		* make distribution DESTDIR=/path/to/jail/dir
+	- Now that we have a jail environment set up, we need to correct the jail and host environments
+	- Initialize the jail as so:
+		* jail <jail-path> <hostname> <ip list> /bin/sh /etc/rc
+	- You should now be in the jail environment and be able to configure it as necessary.
+	- It's a good idea to have a separate pseudo-NIC for the jails, such as lo1, to keep traffic from clogging up lo0
+		* ifconfig lo1 create
+
+-- Postgres setup (partially for Zabbix)
+	- Install the postgres packages through pkg or ports
+	- add `enable_postgresql="YES"` to /etc/rc.conf to have it started at boot/startup
+	- run `/usr/local/etc/rc.d/postgresql initdb` to initialize the database cluster
+	- run `/usr/local/bin/pg_ctl -D /var/db/postgres/data<ver> -l <logfile> start` to start the database process
+		* This must be run as a non-privileged user, such as the "postgres" user
+	- create some users (roles), groups (also roles) and have them set up such that there's actually a permissions system
+	- You can use the \du command to view the current roles available on the database
+	- Similarly, the \dp <table> command will show you the permissions granted on a table
+	- Ideally, these permissions would be tracked in an administrative table for easy viewing/reference
+
+-- Zabbix Install
+	- On *BSD, install from the ports tree to ensure that the proper database backend is being used
+	- after installing from ports, lock the package to ensure a `pkg upgrade` doesn't clobber it
+	- according to one website, the following commands are necessary to allocate enough memory for Zabbix to work
+		* sysctl kern.ipc.shmall=409600
+		* sysctl kern.ipc.shmmax=204800000
+	- It's advisable to install the correct port for the php56 module from /usr/ports/databases/php56-<dbtype>, so the zabbix install can understand it
+	- For some reason the default is to use MySQL, but I'm sure there's a good reason for that
+	- Essentially the entire process was as follows:
+		* make config install clean -C /usr/ports/net-mgmt/zabbix3-server
+		* make config install clean -C /usr/ports/net-mgmt/zabbix3-frontend
+		* make config install clean -C /usr/ports/www/apache24
+		* make config install clean -C /usr/ports/lang/php56
+		* $EDITOR /usr/local/etc/apache24/httpd.conf
+		* cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
+		* $EDITOR /usr/local/etc/php.ini
+		* echo 'apache24_enable="YES"' >> /etc/rc.conf
+		* echo 'zabbix_server_enable="YES"' >> /etc/rc.conf
+		* psql -U <user> <zabbix_db>
+			+=> \i /usr/local/share/zabbix3/server/database/postgresql/schema.sql
+			+=> \i /usr/local/share/zabbix3/server/database/postgresql/images.sql
+			+=> \i /usr/local/share/zabbix3/server/database/postgresql/data.sql
+		* service zabbix_server start
+		* service apache24 start
+		* cp /usr/local/etc/zabbix3/zabbix_server.conf.sample /usr/local/etc/zabbix3/zabbix_server.conf
+		* $EDITOR /usr/local/etc/zabbix3/zabbix_server.conf
+	- Assuming all the user accounts and config files were modified correctly, 
+	connecting to the webserver should allow you to continue with the zabbix frontend install
+	- At this point, you should just need to configure zabbix, most likely through the frontend, to suit your needs
+	- There is an API, but it's a bit too involved to use easily at this time.
+
+	- It's also possible to import a list of hosts through an XML file, so it should be possible to at least write a basic outline XML file
+		to import all necessary hosts to get a head start on new installs if the database can't be copied over to the new install for whatever reason.
+
+-- SNMP 
+	- To ensure we're able to be as flexible as possible, we should be using SNMP to monitor certain things
+	- This requires the net/snmp package/port to be installed on a FreeBSD box, it may actually be preinstalled on Linux hosts
+	- Add `snmpd_enable="YES"` and `snmptrapd_enable="YES"` to allow communication via SNMP
+	- Copy the example configuration files from /usr/local/share/snmp into /usr/local/etc/
+	- Modify the config files to respond to whichever host(s) are going to be making monitoring requests
+	- AgentAddress is meant to be the IP address you want snmpd to bind to, so this would be the hosts own IP, but not the loopback
+	- The basic command if SNMPD is set up correctly will be `snmpwalk -Os -c public -v 2c <hostname/IP> system`
