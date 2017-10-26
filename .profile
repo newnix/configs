@@ -17,6 +17,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin:/us
 BLOCKSIZE=K;	export BLOCKSIZE
 EDITOR=vim;   	export EDITOR
 PAGER=less;  	export PAGER
+MANPAGER=less; export MANPAGER
 
 if [[ $(basename "$SHELL") == "bash" ]]
 then

@@ -31,23 +31,27 @@ HISTFILE="$HOME/.bash_history.$HISTTTY"
 if [ -z $DISPLAY ] # since this should be set every time X starts
 then
 	ISX=false
-else 
-	ISX=true
-fi
-if [ $ISX ] 
-then 
+	export LANG="C"
 	export TERM=cons25
-	export LANG=C
 else
-	export TERM=xterm-256color
-	export LANG=en_US.UTF-8
+	ISX=true
+	export LANG="en_US.UTF-8"
+	export TERM="xterm-256color"
 fi
-export PATH=$PATH:$HOME/bin:$HOME/bin/c:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
-export VISUAL=vim
-export EDITOR=vim
+export PATH=$PATH:$HOME/bin:$HOME/bin/c:$HOME/bin/rust:$HOME/bin/perl:/usr/local/9/bin:/usr/local/plan9/bin:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
+export VISUAL=nvim
+export EDITOR=nvim
+export QT_QPA_PLATFORMTHEME=qt5ct
+export SSH_AUTH_SOCK
+export SSH_AGENT_PID
 
 ## Set the time format
 export TIMEFORMAT=%P
+
+if [ -x /usr/local/bin/nvim ]
+then
+	alias vim='nvim'
+fi
 
 if [ -x /usr/local/bin/lolcat ]
 then
@@ -142,8 +146,8 @@ then
 			echo "That site returned no matches."
 			connect=1 ## This will cause the function to just exit with an echo message
 		else
-			db_host=$($db_search_cmd | awk -F ' : ' '{print $6}' | cut -d' ' -f1)
-			db_name=$($db_search_cmd | awk -F ' : ' '{print $7}')
+			db_host=$($db_search_cmd | awk -F ' : ' '{print $8}' | cut -d' ' -f1)
+			db_name=$($db_search_cmd | awk -F ' : ' '{print $9}' | cut -d' ' -f1)
 			connect=0 ## We have good data, exactly one match, move on to the next conditional
 		fi
 		## Removed from the if statement to try fixing this function. 
@@ -232,3 +236,15 @@ function 24bit() {
     printf "\n";
 	}'
 }
+
+if [ -x $HOME/bin/adfix.sh ]
+then
+	function adupdate() {
+		$HOME/bin/adfix.sh
+	}
+fi
+
+#function ssh-weak(){
+## For use with exceptionally old or insecure sshd's, but still better than telnet ##
+	#ssh $USER@"$@" -o KexAlgorithms +diffie-hellman-group1-sha1 -o HostKeyAlgorithms +ssh_dss
+#}
