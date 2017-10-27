@@ -1,4 +1,7 @@
 :set number
+" OpenBSD compat
+" this is not guranteed to be on by default
+:set bs=2
 :set relativenumber
 :syntax on
 :set tabstop=2
