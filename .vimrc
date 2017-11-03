@@ -1,3 +1,29 @@
+if &compatible
+	set nocompatible " needed for the linter plugin
+endif
+
+" this needs to be installed before it can be used
+" install the plugin manager as stated below:
+"
+" curl
+" https://raw.githubuser.content.com/Shougo/dein.vim/master/bin/installer.sh
+" -o installer.sh
+" sh ./installer.sh ~/.config/vim
+"
+" then use `:call dein#install()`
+set runtimepath+=/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim
+
+if dein#load_state('/home/newnix/.config/vim')
+	call dein#begin('/home/newnix/.config/vim')
+
+	call dein#add('/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim')
+	call dein#add('Shougo/neosnippet.vim')
+	call dein#add('Shougo/neosnippet-snippet')
+	call dein#add('w0rp/ale')
+	call dein#end()
+	call dein#save_state()
+endif 
+
 :set number
 " OpenBSD compat
 " this is not guranteed to be on by default
