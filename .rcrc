@@ -1,0 +1,38 @@
+## This is the startup config for the rc shell, it's probably
+## my favorite shell if a bit unweildy at first.
+
+## In rc syntax, $* is equivalent to bash's $@
+# a subshell is spawned by any command prefixed with '@'
+# additonally, it's worth mentioning that rc has much more 
+# C-like syntax than even csh.
+
+## set some environmental variables 
+LANG=(en_US.UTF-8)
+TERM=(xterm-256color)
+path=(/bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin $home/bin $home/bin/c)
+
+if (which nvim) {
+	EDITOR=(nvim)
+	VISUAL=(nvim)
+} else {
+	EDITOR=(vim)
+	VISUAL=(vim)
+}
+
+## Define the $prompt
+prompt=('
+'`whoami'@'`hostname':'`pwd'
+; ' '')
+
+## Function definitions
+fn reload {
+	# simply reload the file ~/.rcrc
+	. $home/.rcrc
+}
+
+## Update the prompt to show the 
+# directory as we chdir throughout the FS
+fn ncd {
+	/usr/bin/cd $*
+	&& reload
+}
