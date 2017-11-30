@@ -6,7 +6,7 @@ endif
 " install the plugin manager as stated below:
 "
 " curl
-" https://raw.githubuser.content.com/Shougo/dein.vim/master/bin/installer.sh
+" https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
 " -o installer.sh
 " sh ./installer.sh ~/.config/vim
 "
