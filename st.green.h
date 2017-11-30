@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "Termsynu:size=9:style=Regular:autohint=true";
+char font[] = "Terminess Powerline:size=9:style=Regular:autohint=true";
 int borderpx = 2;
 
 /*
@@ -16,7 +16,7 @@ int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-char shell[] = "/bin/bash";
+char shell[] = "/usr/local/bin/bash";
 static char *utmp = NULL;
 char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -istrip -altwerase -cstopb 38400 -echoprt";
 
@@ -107,7 +107,7 @@ const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#1101ED", /* [256] default cursor */
+	"#9422E1", /* [256] default cursor */
 	"#0010ED", /* [257] reverse cursor */
 	"#000000", /* [258] background color */
 	"#00FF00", /* [259] forground color */
