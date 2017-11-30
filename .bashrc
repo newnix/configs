@@ -39,8 +39,21 @@ else
 	export TERM="xterm-256color"
 fi
 export PATH=$PATH:$HOME/bin:$HOME/bin/c:$HOME/bin/rust:$HOME/bin/perl:/usr/local/9/bin:/usr/local/plan9/bin:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
-export VISUAL=nvim
-export EDITOR=nvim
+
+## Use neovim if available
+if [ -x /usr/local/bin/nvim ]
+then
+	export VISUAL=nvim
+	export EDITOR=nvim
+elif [ -x /bin/nvim ]
+then 
+	export VISUAL=nvim
+	export EDITOR=nvim
+else
+	export VISUAL=vim
+	export EDITOR=vim
+fi
+
 export QT_QPA_PLATFORMTHEME=qt5ct
 export SSH_AUTH_SOCK
 export SSH_AGENT_PID
@@ -49,6 +62,9 @@ export SSH_AGENT_PID
 export TIMEFORMAT=%P
 
 if [ -x /usr/local/bin/nvim ]
+then
+	alias vim='nvim'
+elif [ -x /bin/nvim ]
 then
 	alias vim='nvim'
 fi

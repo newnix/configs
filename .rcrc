@@ -11,7 +11,7 @@ LANG=(en_US.UTF-8)
 TERM=(xterm-256color)
 path=(/bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin $home/bin $home/bin/c)
 
-if (which nvim) {
+if (test -x `(which nvim)) {
 	EDITOR=(nvim)
 	VISUAL=(nvim)
 } else {
@@ -33,6 +33,6 @@ fn reload {
 ## Update the prompt to show the 
 # directory as we chdir throughout the FS
 fn ncd {
-	/usr/bin/cd $*
+	cd $*
 	&& reload
 }
