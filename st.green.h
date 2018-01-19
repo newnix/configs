@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "Terminess Powerline:size=9:style=Regular:autohint=true";
+char font[] = "Termsynu:size=9:style=Regular:autohint=true";
 int borderpx = 2;
 
 /*
@@ -84,33 +84,33 @@ static unsigned int tabspaces = 8;
 
 /* Terminal colors (16 first used in escape sequence) */
 const char *colorname[] = {
-	/* 8 normal colors */
-	"#043085", /* [0]  */
-	"#BC3001", /* [1]  */
-	"#3696D3", /* [2]  */
-	"#290A7E", /* [3]  */
-	"#1979E6", /* [4]  */
-	"#00494D", /* [5]  */
-	"#247101", /* [6]  */
-	"#012AA9", /* [7]  */
+	/*  8 normal colors  */
+	"#043085", /* [000]  */
+	"#BC3001", /* [001]  */
+	"#3696D3", /* [002]  */
+	"#290A7E", /* [003]  */
+	"#1979E6", /* [004]  */
+	"#00494D", /* [005]  */
+	"#247101", /* [006]  */
+	"#012AA9", /* [007]  */
 
-	/* 8 bright colors */
-	"#065069", /* [8]  */
-	"#2746D5", /* [9]  */
-	"#6DAA58", /* [10] */
-	"#6D9F02", /* [11] */
-	"#6DAB5C", /* [12] */
-	"#24B504", /* [13] */
-	"#F63B03", /* [14] */
-	"#FA0202", /* [15] */
+	/*  8 bright colors  */
+	"#065069", /* [008]  */
+	"#2746D5", /* [009]  */
+	"#6DAA58", /* [010]  */
+	"#6D9F02", /* [011]  */
+	"#6DAB5C", /* [012]  */
+	"#24B504", /* [013]  */
+	"#F63B03", /* [014]  */
+	"#FA0202", /* [015]  */
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#9422E1", /* [256] default cursor */
-	"#0010ED", /* [257] reverse cursor */
+	"#9422E1", /* [256] default cursor   */
+	"#0010ED", /* [257] reverse cursor   */
 	"#000000", /* [258] background color */
-	"#00FF00", /* [259] forground color */
+	"#00FF00", /* [259] forground color  */
 };
 
 

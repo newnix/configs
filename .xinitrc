@@ -6,7 +6,6 @@ sysmodmap=/etc/X11/xinit/.Xmodmap
 # merge in defaults and keymaps
 if [ -f $sysresources ]; then
     xrdb -merge $sysresources
-
 fi
 
 if [ -f $sysmodmap ]; then
@@ -15,7 +14,6 @@ fi
 
 if [ -f "$userresources" ]; then
     xrdb -merge "$userresources"
-
 fi
 
 if [ -f "$usermodmap" ]; then
@@ -31,15 +29,22 @@ if [ -d /usr/local/etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
+export QT_QPA_PLATFORMTHEME=qt5ct
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
 #urxvtd --opendisplay --fork --quiet &
-xrandr --output DisplayPort-0 --left-of DVI-0 &
-sh ~/.fehbg &
+#xrandr --addmode DVI-0 1920x1080 &
+#xrandr --output DVI-0 --mode 1920x1080 &
+xrandr --output DisplayPort-0 --right-of DVI-0 &
+#sh ~/.fehbg &
 xscreensaver &
-exec ssh-agent &
+#ssh-agent &
+#export SSH_AUTH_SOCK & 
+#export SSH_AGENT_PID &
 xset b off &
-/home/mvoight/dwmstatus/dwmstatus &
-exec dwm
+xset s off &
+dwmstatus &
+dbus-launch --exit-with-session --sh-syntax dwm
 #xmobar &
+#exec start-lumina-desktop
 #exec xmonad

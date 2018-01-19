@@ -28,7 +28,7 @@ HISTFILE="$HOME/.bash_history.$HISTTTY"
 # make sure that we're using the right environment
 # depending on whether we're running X or not
 # moved to .bashrc from .profile to ensure it's run for each interactive shell
-if [ -z $DISPLAY ] # since this should be set every time X starts
+if [ $(echo $TTY | grep -c pt) -eq 0 ] # since this should be set every time X starts
 then
 	ISX=false
 	export LANG="C"
@@ -89,10 +89,10 @@ prompt_tty=$(echo $TTY | cut -d/ -f3,4)
 if [ $UID -ne 0 ]
 	then
 		##set the prompt
-		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\H \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\h \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\H \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 fi 
 
 ## Function to reload the shell, since the whole alias thing doesn't seem to work properly
@@ -104,18 +104,17 @@ reload(){
 ## Will need some refinement to add in more options, but this should get the basic functionality down
 weather(){
 	local city="$@"
-	if [ z$city == "z" ]
-	then 
-		city="78154"
-	fi
 	curl "wttr.in/$city"
 }
 
-## Sprunger
-## Make things easier to upload to sprunge.us
-sprunge()
-{
-    $("$@") | curl -F 'sprunge=<-' http://sprunge.us
+## Pastebin: using ix.io to share things easily 
+#  this currently expects a filename as an argument
+share() {
+	curl -F "f:1=@$@" http://ix.io
+}
+# delete the given post
+unshare() {
+	curl -X DELETE http://ix.io/"$@"
 }
 
 ## Test the term colors
@@ -186,36 +185,15 @@ then
 	fi
 fi
 
-## Show me all files matching an extension
-function lsext()
-{
-	local ext=$"@"
-
-	case $ext in
-	## some boilerplate options
-	## three common help invocations to explain what's happening.
-	-?		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
-	-h		) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
-	--help	) echo -e "Usage: lsext \$EXTENSION (eg. csv)";;
-	txt		) ls -halt ./*.txt;;
-	csv		) ls -halt ./*.csv;;
-	bash	) ls -halt ./*.bash;;
-	mp3		) ls -halt ./*.mp3;;
-	## I'm not your mother. 
-	## I'm not planning out everything.
-	*		) ls -halt ./*.${ext};
-	esac
-}
-
 if [ -x /usr/bin/fortune ]
 then
 	if [ -x /usr/local/bin/lolcat ]
 	then
 		if [ -x /usr/local/bin/cowsay ]
 		then
-			fortune -a | cowsay -f tux-stab | lolcat -F 1
+			fortune -a | cowsay -f tux-stab | lolcat 
 		else
-			fortune -a | lolcat -F 1
+			fortune -a | lolcat 
 		fi
 	else
 		fortune -a
@@ -226,9 +204,9 @@ then
 	then
 		if [ -x /usr/local/bin/cowsay ] 
 		then 
-			fortune -a | cowsay -f tux-stab | lolcat -F 1
+			fortune -a | cowsay -f tux-stab | lolcat 
 		else 
-			fortune -a | lolcat -F 1
+			fortune -a | lolcat 
 		fi
 	else
 		fortune -a 
@@ -264,3 +242,22 @@ fi
 ## For use with exceptionally old or insecure sshd's, but still better than telnet ##
 	#ssh $USER@"$@" -o KexAlgorithms +diffie-hellman-group1-sha1 -o HostKeyAlgorithms +ssh_dss
 #}
+
+function cleanhist() {
+	histfiles=($HOME/.bash_hist*)
+	histtar="$HOME/history.tar"
+	archivedir="$HOME/archive"
+	histfinal="history.txz"
+
+	for file in ${histfiles[@]}
+	do
+		tar rpf $histtar $file && rm -f $file
+	done
+
+	if [ -d $archivedir ]
+	then
+		mkdir -p $archivedir
+	fi
+
+	xz -v9 -T0 $histtar && mv $histtar $archivedir$histfinal.$(date +%Y%m%d)
+}

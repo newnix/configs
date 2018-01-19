@@ -5,6 +5,8 @@
 # a subshell is spawned by any command prefixed with '@'
 # additonally, it's worth mentioning that rc has much more 
 # C-like syntax than even csh.
+# Important note: for a command like `make search key=darcs -C /usr/src`
+# it needs to be rewritten as: `make search 'key=darcs' -C /usr/src`
 
 ## set some environmental variables 
 LANG=(en_US.UTF-8)
@@ -21,7 +23,7 @@ if (test -x `(which nvim)) {
 
 ## Define the $prompt
 prompt=('
-'`whoami'@'`hostname':'`pwd'
+'$USER'@'`hostname':'`pwd'
 ; ' '')
 
 ## Function definitions
@@ -32,7 +34,26 @@ fn reload {
 
 ## Update the prompt to show the 
 # directory as we chdir throughout the FS
-fn ncd {
-	cd $*
+fn cd {
+	builtin cd $*
 	&& reload
+}
+
+fn vim {
+	$EDITOR $*
+}
+
+## get the weather forcast
+fn weather {
+	city=$*
+	/usr/local/bin/curl wttr.in/$city
+}
+
+## useful shorthand for pkg_ng 
+fn revdeps {
+	/usr/sbin/pkg query %rn $*
+}
+
+fn deplist {
+	/usr/sbin/pkg query %rn $*
 }
