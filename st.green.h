@@ -17,7 +17,7 @@ int borderpx = 2;
  * 5: value of shell in config.h
  */
 char shell[] = "/usr/local/bin/bash";
-static char *utmp = NULL;
+static char utmp[] = "/usr/local/bin/tmux";
 char stty_args[] = "stty raw pass8 nl iutf8 -echo -iexten -istrip -altwerase -cstopb 38400 -echoprt";
 
 /* identification sequence returned in DA and DECID */
