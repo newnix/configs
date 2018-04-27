@@ -2,15 +2,16 @@ if &compatible
 	set nocompatible
 endif
 
-set runtimepath+=/home/mvoight/.config/vim/repos/github.com/Shougo/dein.vim
+set runtimepath+=/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim
 
-if dein#load_state('/home/mvoight/.config/vim')
-	call dein#begin('/home/mvoight/.config/vim')
+if dein#load_state('/home/newnix/.config/vim')
+	call dein#begin('/home/newnix/.config/vim')
 
-	call dein#add('/home/mvoight/.config/vim/repos/github.com/Shougo/dein.vim')
+	call dein#add('/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim')
 	call dein#add('Shougo/neosnippet.vim')
 	call dein#add('Shougo/neosnippet-snippet')
 	call dein#add('w0rp/ale')
+	"call dein#add('xuhdev/vim-latex-live-preview')
 	call dein#end()
 	call dein#save_state()
 endif 
@@ -36,3 +37,6 @@ endif
 ":set lazyredraw
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+" Add provisions for LaTeX live previews
+let g:livepreview_previewer = '/usr/local/bin/mupdf'
+let g:updatetime = 1000
