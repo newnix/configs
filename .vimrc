@@ -2,6 +2,16 @@ if &compatible
 	set nocompatible
 endif
 
+" this needs to be installed before it can be used
+" install the plugin manager as stated below:
+"
+" curl
+" https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
+" -o installer.sh
+" sh ./installer.sh ~/.config/vim
+"
+" then use `:call dein#install()`
+
 set runtimepath+=/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim
 
 if dein#load_state('/home/newnix/.config/vim')
@@ -38,5 +48,5 @@ endif
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
 " Add provisions for LaTeX live previews
-let g:livepreview_previewer = '/usr/local/bin/mupdf'
-let g:updatetime = 1000
+"let g:livepreview_previewer = '/usr/local/bin/mupdf'
+"let g:updatetime = 1000
