@@ -2,9 +2,6 @@
 # ~/.bashrc
 #
 
-## Using double hashes for documentation, singles for commenting something out, 4 for pacman use, 3 for entropy use
-## This way it's trivial to remove only those hashes that actually need to be removed at any given time.
-
 ## If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -18,17 +15,24 @@ done
 
 ## Let your histfile grow, man
 unset HISTFILESIZE
-export HISTSIZE=9999 ## Because if I have a single session running that long, I should probaly rotate the file1. Or stop with the frivolous commands.
+export HISTSIZE=9999 
 export HISTTIMEFORMAT='%Y%m%d %R '
+export QT_QPA_PLATFORMTHEME=qt5ct
+export XDG_RUNTIME_DIR=/tmp/$USER
+export SSH_AUTH_SOCK
+export SSH_AGENT_PID
+
+## Set the time format
+export TIMEFORMAT=%P
+
+## Make functions modular ## 
+export BASHPLUGS=$HOME/.bash.d/plugs
 
 ## Set a pty/tty specific histfile
 TTY=$(tty)
 HISTTTY=$(echo $TTY | cut -d / -f3,4 | tr '/' '.')
 HISTFILE="$HOME/.bash_history.$HISTTTY"
-# make sure that we're using the right environment
-# depending on whether we're running X or not
-# moved to .bashrc from .profile to ensure it's run for each interactive shell
-if [ $(echo $TTY | grep -c pt) -eq 0 ] # since this should be set every time X starts
+if [ ! $DISPLAY ] 
 then
 	ISX=false
 	export LANG="C"
@@ -38,43 +42,26 @@ else
 	export LANG="en_US.UTF-8"
 	export TERM="xterm-256color"
 fi
-export PATH=$PATH:$HOME/bin:$HOME/bin/c:$HOME/bin/rust:$HOME/bin/perl:/usr/local/9/bin:/usr/local/plan9/bin:/sbin:/usr/sbin:/usr/kerberos/sbin:/bin:/usr/local/sbin
+# This is recursive (PATH=$PATH:...), and causes undue cluttering of the $PATH as the shell is reloaded for any reason
+# Instead, recommend using something like:
+#  printf "PATH=%s:%s" $PATH ${ADDITIONS} >> ~/.profile
+# which will create a static, expanded entry that can simply be appended as needed
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin:$HOME/bin:$HOME/bin/c
 
 ## Use neovim if available
 if [ -x /usr/local/bin/nvim ]
 then
 	export VISUAL=nvim
 	export EDITOR=nvim
+	alias vim='nvim'
 elif [ -x /bin/nvim ]
 then 
 	export VISUAL=nvim
 	export EDITOR=nvim
+	alias vim='nvim'
 else
 	export VISUAL=vim
 	export EDITOR=vim
-fi
-
-export QT_QPA_PLATFORMTHEME=qt5ct
-export SSH_AUTH_SOCK
-export SSH_AGENT_PID
-
-## Set the time format
-export TIMEFORMAT=%P
-
-if [ -x /usr/local/bin/nvim ]
-then
-	alias vim='nvim'
-elif [ -x /bin/nvim ]
-then
-	alias vim='nvim'
-fi
-
-if [ -x /usr/local/bin/lolcat ]
-then
-	alias cat='lolcat'
-elif [ -x /usr/bin/lolcat ]
-then
-	alias cat='lolcat'
 fi
 
 ## Push dotfiles to remote host
@@ -85,7 +72,7 @@ fi
 
 ## Change the prompt slightly if root, otherwise, use the same prompt. 
 ## Plan for color change later on, when colors are better understood in prompting.
-prompt_tty=$(echo $TTY | cut -d/ -f3,4)
+prompt_tty=$(printf "$TTY" | cut -d/ -f3,4)
 if [ $UID -ne 0 ]
 	then
 		##set the prompt
@@ -96,168 +83,18 @@ if [ $UID -ne 0 ]
 fi 
 
 ## Function to reload the shell, since the whole alias thing doesn't seem to work properly
+function loadall() { 
+	local plug=""
+	for plug in ${BASHPLUGS}/*
+	do
+		. ${plug}
+	done
+}
+
 reload(){
 	. $HOME/.bashrc
 }
 
-## Get the weather/moon forcast
-## Will need some refinement to add in more options, but this should get the basic functionality down
-weather(){
-	local city="$@"
-	curl "wttr.in/$city"
-}
 
-## Pastebin: using ix.io to share things easily 
-#  this currently expects a filename as an argument
-share() {
-	curl -F "f:1=@$@" http://ix.io
-}
-# delete the given post
-unshare() {
-	curl -X DELETE http://ix.io/"$@"
-}
-
-## Test the term colors
-## using a script stolen from tldp.org
-if [ -f $HOME/bin/color_test.bash ]
-then
-	function colors()
-	{
-		$HOME/bin/color_test.bash
-	}
-fi
-
-if [ -f $HOME/bin/fetch_dbinfo.bash ]
-then
-	function dbupdate()
-	{
-		$HOME/bin/fetch_dbinfo.bash
-	}
-fi
-
-## This function doesn't seem to work properly for some reason. 
-if [ -f $HOME/.dbinfo ]
-then
-	if [ -x $(which psql) ]
-	then
-	function db()
-	{
-		local db_site="$@"
-		local db_host
-		local db_name
-		local db_search_cmd="grep -i $db_site $HOME/.dbinfo"
-		local connect ## variable determining how to proceed based of the grep conditional statements
-
-		## Get the database info from the site name
-		## asking for clarification with ambiguous results will come later. Maybe.
-
-		if [ $($db_search_cmd | wc -l) -gt 1 ]
-		then
-			echo "That request was too vague, try again."
-			connect=2 ## This status should be able to trigger an interactive menu for the user to select their target
-			echo -e -n $'\cc' > $TTY
-		elif [ $($db_search_cmd | wc -l) -eq 0 ]
-		then
-			echo "That site returned no matches."
-			connect=1 ## This will cause the function to just exit with an echo message
-		else
-			db_host=$($db_search_cmd | awk -F ' : ' '{print $8}' | cut -d' ' -f1)
-			db_name=$($db_search_cmd | awk -F ' : ' '{print $9}' | cut -d' ' -f1)
-			connect=0 ## We have good data, exactly one match, move on to the next conditional
-		fi
-		## Removed from the if statement to try fixing this function. 
-		
-		## finally added this condition to prevent trying to connect without a match
-		if [ $connect -eq 0 ]
-		then
-			## Now we connect!
-			## Temp modification to issue an echo statement
-			echo "Sanity check time, does this command look correct?"
-			echo "psql -h $db_host $db_name"
-			echo -e "If this is wrong, hit ^C now\n"
-			sleep 2
-			psql -h $db_host $db_name
-		fi
-		
-	}
-	else
-		echo "You must have the Postgresql client installed to use this utility."
-	fi
-fi
-
-if [ -x /usr/bin/fortune ]
-then
-	if [ -x /usr/local/bin/lolcat ]
-	then
-		if [ -x /usr/local/bin/cowsay ]
-		then
-			fortune -a | cowsay -f tux-stab | lolcat 
-		else
-			fortune -a | lolcat 
-		fi
-	else
-		fortune -a
-	fi
-elif [ -x /usr/games/fortune ]
-then
-	if [ -x /usr/local/bin/lolcat ]
-	then
-		if [ -x /usr/local/bin/cowsay ] 
-		then 
-			fortune -a | cowsay -f tux-stab | lolcat 
-		else 
-			fortune -a | lolcat 
-		fi
-	else
-		fortune -a 
-	fi
-fi
-
-function 24bit() {
-	# simple test to check for 24 bit color support
-	# if the gradient is smooth, the true color support is working
-	awk 'BEGIN{
-    s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
-    for (colnum = 0; colnum<77; colnum++) {
-        r = 255-(colnum*255/76);
-        g = (colnum*510/76);
-        b = (colnum*255/76);
-        if (g>255) g = 510-g;
-        printf "\033[48;2;%d;%d;%dm", r,g,b;
-        printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
-        printf "%s\033[0m", substr(s,colnum+1,1);
-    }
-    printf "\n";
-	}'
-}
-
-if [ -x $HOME/bin/adfix.sh ]
-then
-	function adupdate() {
-		$HOME/bin/adfix.sh
-	}
-fi
-
-#function ssh-weak(){
-## For use with exceptionally old or insecure sshd's, but still better than telnet ##
-	#ssh $USER@"$@" -o KexAlgorithms +diffie-hellman-group1-sha1 -o HostKeyAlgorithms +ssh_dss
-#}
-
-function cleanhist() {
-	histfiles=($HOME/.bash_hist*)
-	histtar="$HOME/history.tar"
-	archivedir="$HOME/archive"
-	histfinal="history.txz"
-
-	for file in ${histfiles[@]}
-	do
-		tar rpf $histtar $file && rm -f $file
-	done
-
-	if [ -d $archivedir ]
-	then
-		mkdir -p $archivedir
-	fi
-
-	xz -v9 -T0 $histtar && mv $histtar $archivedir$histfinal.$(date +%Y%m%d)
-}
+## load all the plugins ## 
+loadall
