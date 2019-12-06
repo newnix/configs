@@ -28,9 +28,14 @@ export TIMEFORMAT=%P
 ## Make functions modular ## 
 export BASHPLUGS=$HOME/.bash.d/plugs
 
+## Define the location of the nombre database
+export NOMBREDB="${HOME}/.local/nombre.db"
+
 ## Set a pty/tty specific histfile
 TTY=$(tty)
-HISTTTY=$(echo $TTY | cut -d / -f3,4 | tr '/' '.')
+GPG_TTY=${TTY}
+HISTTTY=${TTY/#\/dev\/}
+HISTTTY=${HISTTTY//\//.}
 HISTFILE="$HOME/.bash_history.$HISTTTY"
 if [ ! $DISPLAY ] 
 then
@@ -54,6 +59,11 @@ then
 	export VISUAL=nvim
 	export EDITOR=nvim
 	alias vim='nvim'
+elif [ -x /usr/bin/nvim ]
+then 
+	export VISUAL=nvim
+	export EDITOR=nvim
+	alias vim='nvim'
 elif [ -x /bin/nvim ]
 then 
 	export VISUAL=nvim
@@ -64,22 +74,17 @@ else
 	export EDITOR=vim
 fi
 
-## Push dotfiles to remote host
-if [ -x $HOME/bin/pushconfigs.bash ]
-then
-	alias pushc=$HOME/bin/pushconfigs.bash
-fi
-
 ## Change the prompt slightly if root, otherwise, use the same prompt. 
 ## Plan for color change later on, when colors are better understood in prompting.
-prompt_tty=$(printf "$TTY" | cut -d/ -f3,4)
+prompt_tty=${TTY/#\//}
+prompt_tty=${prompt_tty/\//:}
 if [ $UID -ne 0 ]
 	then
 		##set the prompt
-		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\H \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n($prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;31m\]\u\[\e[01;34m\]@\[\e[01;35m\]\H \[\e[01;34m\]| \w | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 	else
 		##set the prompt (root)
-		PS1="\n(dev:$prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\H \[\e[01;34m\]| \w  | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
+		PS1="\n($prompt_tty | "'\D{%Y.%m.%d} \A | \[\e[0;35m\]\u\[\e[01;34m\]@\[\e[01;31m\]\H \[\e[01;34m\]| \w | Jobs: \j | \#)\nHist: \! %\[\e[0;00m\]${NO_COLOUR} '
 fi 
 
 ## Function to reload the shell, since the whole alias thing doesn't seem to work properly
