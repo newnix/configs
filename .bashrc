@@ -33,7 +33,8 @@ export NOMBREDB="${HOME}/.local/nombre.db"
 
 ## Set a pty/tty specific histfile
 TTY=$(tty)
-GPG_TTY=${TTY}
+## Apparently needs to be exported to work properly on Ubuntu at least
+export GPG_TTY=${TTY}
 HISTTTY=${TTY/#\/dev\/}
 HISTTTY=${HISTTTY//\//.}
 HISTFILE="$HOME/.bash_history.$HISTTTY"
