@@ -12,7 +12,7 @@ endif
 "
 " then use `:call dein#install()`
 
-set runtimepath+=/home/newnix/.config/vim/repos/github.com/Shougo/dein.vim
+set runtimepath+=~/.config/vim/repos/github.com/Shougo/dein.vim
 let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
 
 if dein#load_state('~/.config/vim')
@@ -22,7 +22,7 @@ if dein#load_state('~/.config/vim')
 	"call dein#add('Shougo/neosnippet.vim')
 	"call dein#add('Shougo/neosnippet-snippet')
 	call dein#add('dense-analysis/ale')
-	call dein#add('janet-lang/janet')
+	call dein#add('janet-lang/janet.vim')
 	call dein#add('wlangstroth/vim-racket')
 	"call dein#add('xuhdev/vim-latex-live-preview')
 	call dein#end()
@@ -71,7 +71,7 @@ let g:ale_c_gcc_options = '-std=c99 -Wall -Wextra -pedantic -I/usr/local/include
 aug specials
 	au!
 	au BufRead,BufNewFile *.rkt,*.rktl set ft=racket
-	au BufRead,BufNewFile *.janet set ft=janet
+	"au BufRead,BufNewFile *.janet set ft=janet
 	au BufRead,BufNewFile *.rkt,*.janet,*.z3,<scheme;janet;lisp> set et | set sts=2 | set sw=2 | set lcs=tab:>- | set list
 	au BufRead,BufNewFile *.md,*.html,<markdown;html> set spell | set listchars=tab;>. | set list
 	au BufRead,BufNewFile *.tex,<tex> set spell
